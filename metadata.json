@@ -1,0 +1,6 @@
+{
+  "name": "Happiiz HR – Multi-Tenant SaaS Platform",
+  "description": "Enterprise multi-tenant workforce management platform for security guard, housekeeping, manpower, and facility management companies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

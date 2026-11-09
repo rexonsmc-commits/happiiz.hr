@@ -1,0 +1,1222 @@
+# HAPPIIZ HR – PHASE 5
+# COMPLETE CLIENT & SITE MANAGEMENT SYSTEM
+# ENTERPRISE MULTI-TENANT SAAS ARCHITECTURE
+
+Act as a senior SaaS software architect, enterprise application developer, Firebase engineer, database architect, security engineer and professional UI/UX designer.
+
+We are continuing the existing Happiiz HR SaaS project.
+
+PHASE 1, PHASE 2, PHASE 3 AND PHASE 4 HAVE ALREADY BEEN COMPLETED.
+
+Your task is to develop PHASE 5: COMPLETE CLIENT & SITE MANAGEMENT SYSTEM.
+
+IMPORTANT:
+Continue the existing project.
+Do not create a new application.
+Do not create a new Firebase project.
+Do not replace the existing authentication system.
+Do not damage existing Super Admin, Subscription, Company Admin, Role Management or Employee Management modules.
+
+First inspect the existing source code, Firestore database, backend APIs, authentication, tenant architecture, employee records, permissions and UI components.
+
+Reuse existing architecture and services wherever possible.
+
+# 1. PROJECT OBJECTIVE
+
+Build a complete Client and Site Management System for Happiiz HR.
+
+The system is designed for:
+
+- Security Guard Companies
+- Security Agencies
+- Housekeeping Companies
+- Manpower Supply Companies
+- Facility Management Companies
+
+Every company must be able to register multiple clients.
+
+Every client must be able to have multiple sites.
+
+Every site must have its own:
+- Unique Site ID
+- Site Code
+- QR Code
+- Address
+- Location
+- Contract
+- Services
+- Employee Requirements
+- Employee Assignments
+- Supervisor
+- Commercial Rates
+- Documents
+- Operational Status
+
+Example:
+
+Company: REXON SECURITY AND MANPOWER SOLUTIONS
+
+Client 1: ABC Industries
+- Site 1: ABC Factory Delhi
+- Site 2: ABC Warehouse Noida
+- Site 3: ABC Office Gurgaon
+
+Client 2: XYZ Hospital
+- Site 1: XYZ Hospital Main Building
+- Site 2: XYZ Hospital Branch
+
+All client and site information must remain isolated within the respective tenant.
+
+# 2. CLIENT MANAGEMENT DASHBOARD
+
+Create a professional Client Management Dashboard.
+
+Display dashboard statistics:
+
+- Total Clients
+- Active Clients
+- Inactive Clients
+- Pending Clients
+- Total Sites
+- Active Sites
+- Inactive Sites
+- Expiring Contracts
+- Total Required Employees
+- Total Assigned Employees
+
+Use real Firestore/backend data only.
+
+Do not display fabricated statistics.
+
+Create quick actions:
+
+- Add New Client
+- View All Clients
+- Add New Site
+- View All Sites
+- Manage Contracts
+- View Site Reports
+
+Create search, filters, pagination and sorting.
+
+# 3. CLIENT REGISTRATION MODULE
+
+Create a multi-step Client Registration Form.
+
+SECTION A: Basic Client Information
+
+Fields:
+
+- Client ID (automatically generated)
+- Client Legal Name
+- Client Display Name
+- Client Type
+- Business Category
+- Company Logo
+- GST Number
+- PAN Number
+- CIN Number (optional)
+- Website
+- Client Email
+- Main Contact Number
+- Alternate Contact Number
+- Client Description
+- Account Status
+
+Client Types:
+
+- Private Company
+- Public Company
+- Factory
+- Hospital
+- Office
+- Residential Society
+- Warehouse
+- School or College
+- Government Organization
+- Other
+
+SECTION B: Authorized Contact Person
+
+Fields:
+
+- Contact Person Name
+- Designation
+- Email
+- Mobile Number
+- Alternate Number
+- Department
+
+SECTION C: Billing Information
+
+Fields:
+
+- Billing Name
+- Billing Address
+- GST Number
+- State
+- City
+- PIN Code
+- Billing Email
+- Billing Contact Number
+
+SECTION D: Business Address
+
+Fields:
+
+- Registered Address
+- City
+- State
+- PIN Code
+- Country
+
+SECTION E: Client Relationship
+
+Fields:
+
+- Client Relationship Manager
+- Account Manager
+- Client Start Date
+- Client Status
+- Internal Remarks
+
+Features:
+
+- Create Client
+- Edit Client
+- View Client
+- Archive Client
+- Activate Client
+- Deactivate Client
+- Search Client
+- Filter Client
+- Client Profile View
+
+Generate unique Client IDs through trusted backend logic.
+
+Prevent duplicate client records where appropriate.
+
+# 4. CLIENT PROFILE MANAGEMENT
+
+Create a detailed Client Profile page.
+
+Tabs:
+
+1. Overview
+2. Company Information
+3. Contact Persons
+4. Billing Details
+5. Sites
+6. Contracts
+7. Services
+8. Documents
+9. Employee Deployment
+10. Reports
+11. Activity History
+
+Display:
+
+- Client Name
+- Client ID
+- Client Logo
+- Client Type
+- Contact Details
+- Total Sites
+- Active Sites
+- Contract Status
+- Service Summary
+- Assigned Account Manager
+
+All information must be retrieved from the authenticated tenant's database.
+
+# 5. SITE MANAGEMENT MODULE
+
+Create a complete Site Management System.
+
+A single client can have multiple sites.
+
+Site Registration Form:
+
+SECTION A: Basic Site Information
+
+- Site ID (automatically generated)
+- Site Code (automatically generated)
+- Site Name
+- Client Name
+- Site Category
+- Site Type
+- Site Description
+- Site Status
+- Site Opening Date
+- Site Closing Date (optional)
+
+Site Categories:
+
+- Security Site
+- Housekeeping Site
+- Manpower Site
+- Facility Management Site
+- Mixed Services Site
+
+Site Types:
+
+- Factory
+- Hospital
+- Corporate Office
+- Warehouse
+- Residential Society
+- Commercial Building
+- Educational Institution
+- Retail Store
+- Construction Site
+- Industrial Facility
+- Other
+
+SECTION B: Site Address
+
+- Site Address
+- Building Name
+- Street
+- Area
+- City
+- State
+- PIN Code
+- Country
+- Latitude
+- Longitude
+
+Allow authorized users to select site location on an interactive map if map integration is configured.
+
+Do not invent GPS coordinates.
+
+SECTION C: Site Contact Information
+
+- Site Contact Person
+- Site Manager
+- Contact Number
+- Alternate Contact
+- Email Address
+
+SECTION D: Site Administration
+
+- Assigned Branch
+- Site Manager
+- Site Supervisor
+- Operations Manager
+- Client Relationship Manager
+- Site Opening Date
+- Operational Status
+
+SECTION E: Site Notes
+
+- Site Instructions
+- Special Requirements
+- Security Instructions
+- Housekeeping Instructions
+- Manpower Instructions
+- Emergency Instructions
+
+# 6. AUTOMATIC SITE CODE GENERATION
+
+Create an automatic unique Site Code system.
+
+Examples:
+
+REX-SITE-0001
+REX-SITE-0002
+REX-SITE-0003
+
+Each site must have:
+
+- Internal Site ID
+- Human-readable Site Code
+- Tenant ID
+- Client ID
+- Creation Date
+
+Requirements:
+
+- Generate codes through trusted backend logic.
+- Use Firestore transactions or another atomic counter mechanism.
+- Prevent duplicate codes during simultaneous creation.
+- Allow an authorized administrator to configure the company prefix.
+- Never reuse an issued site code.
+- Do not allow ordinary users to modify protected identifiers.
+
+# 7. QR CODE GENERATION FOR EACH SITE
+
+Automatically generate a unique QR code for each registered site.
+
+QR Code information must contain a secure site verification URL or an opaque site identifier.
+
+Example:
+
+https://app.happiizhr.com/site/verify/SECURE_SITE_TOKEN
+
+Requirements:
+
+- Generate QR code after successful site creation.
+- Display QR Code in Site Profile.
+- Download QR Code as PNG.
+- Download Site QR Code as PDF.
+- Print QR Code.
+- Regenerate QR Code when authorized.
+- Revoke old QR tokens securely.
+- Verify site authenticity when scanned.
+
+The public verification page must only display approved site information.
+
+Never expose private client contracts, employee records, financial rates or confidential information through public QR codes.
+
+Prepare the QR system for Phase 6 Attendance integration.
+
+Do not implement complete attendance punching in Phase 5.
+
+# 8. SITE SERVICES MANAGEMENT
+
+A site can receive one or multiple services.
+
+Allow administrators to configure services for each site.
+
+Available services:
+
+- Security Guard
+- Security Supervisor
+- Security Officer
+- Housekeeping
+- Deep Cleaning
+- Office Boy
+- Helper
+- Skilled Manpower
+- Unskilled Manpower
+- Technical Staff
+- Facility Management
+- Other Custom Services
+
+Features:
+
+- Add Service to Site
+- Edit Service
+- Remove Service
+- Activate Service
+- Deactivate Service
+- Service Description
+- Service Start Date
+- Service End Date
+
+A site can have multiple service categories simultaneously.
+
+# 9. MANPOWER REQUIREMENT MANAGEMENT
+
+Create a Site Manpower Requirement module.
+
+For each service, allow the company to define the required employee count.
+
+Example:
+
+ABC Factory Delhi:
+
+Security Guard: 20
+Security Supervisor: 2
+Housekeeping Staff: 15
+Office Boy: 3
+Total Required: 40
+
+Fields:
+
+- Site ID
+- Service Category
+- Designation
+- Required Employees
+- Shift Pattern
+- Gender Requirement, only if legally appropriate
+- Skill Requirements
+- Qualification Requirements
+- Experience Requirements
+- Start Date
+- End Date
+- Special Instructions
+
+Display:
+
+- Total Required
+- Total Assigned
+- Remaining Vacancies
+- Overstaffed Positions
+
+Calculate vacancies from the actual assignment records.
+
+Prevent negative and invalid employee requirements.
+
+Do not treat an unassigned employee as deployed.
+
+# 10. EMPLOYEE DEPLOYMENT MANAGEMENT
+
+Integrate the existing Phase 4 Employee Management System.
+
+Allow authorized users to assign registered employees to specific sites.
+
+Assignment fields:
+
+- Assignment ID
+- Employee ID
+- Employee Name
+- Client ID
+- Site ID
+- Site Code
+- Designation
+- Service Category
+- Assigned Date
+- Assignment Start Date
+- Assignment End Date
+- Reporting Supervisor
+- Assignment Status
+- Remarks
+
+Assignment Status:
+
+- Pending
+- Active
+- Completed
+- Transferred
+- Cancelled
+
+Features:
+
+- Assign Employee to Site
+- Transfer Employee to Another Site
+- Remove Employee from Site
+- View Assigned Employees
+- View Site-Wise Employee List
+- View Employee Assignment History
+
+IMPORTANT BUSINESS RULES:
+
+1. Only existing registered employees can be assigned.
+2. Employee must belong to the same tenant.
+3. Inactive, suspended, resigned or terminated employees cannot receive new active assignments.
+4. Prevent conflicting active assignments for the same employee unless an explicitly configured multi-site assignment policy permits them.
+5. Maintain complete assignment history.
+6. Never delete historical assignment records.
+7. Update site manpower statistics from actual active assignments.
+8. Respect the company's employee subscription limits.
+9. Enforce assignment permissions through backend authorization.
+
+Prepare this assignment data for Phase 6 Attendance and Duty Roster integration.
+
+# 11. SITE SUPERVISOR MANAGEMENT
+
+Allow companies to assign existing employees as Site Supervisors.
+
+Features:
+
+- Select Existing Employee
+- Assign Supervisor to Site
+- Assign Multiple Authorized Supervisors
+- Change Supervisor
+- Remove Supervisor
+- View Supervisor Details
+- View Supervisor Assignment History
+
+Only authorized employees can be assigned as supervisors.
+
+A Site Supervisor should eventually be able to view only assigned sites and permitted information.
+
+Do not automatically grant additional permissions just because an employee has a supervisor designation.
+
+Use the existing Phase 3 Role and Permission System.
+
+# 12. CLIENT CONTRACT MANAGEMENT
+
+Create a professional Client Contract Management System.
+
+Contract fields:
+
+- Contract ID
+- Contract Number
+- Client ID
+- Client Name
+- Site ID (optional for client-wide contracts)
+- Contract Title
+- Contract Type
+- Contract Start Date
+- Contract End Date
+- Contract Renewal Date
+- Contract Value
+- Billing Frequency
+- Payment Terms
+- Contract Status
+- GST Applicability
+- Service Details
+- Contract Description
+- Special Terms and Conditions
+
+Contract Status:
+
+- Draft
+- Pending Approval
+- Active
+- Expiring Soon
+- Expired
+- Suspended
+- Terminated
+- Renewed
+
+Features:
+
+- Create Contract
+- Edit Contract
+- View Contract
+- Upload Signed Contract
+- Download Contract PDF
+- Generate Contract Summary
+- Renew Contract
+- Terminate Contract
+- Track Contract Expiry
+- Contract History
+
+Support multiple contracts per client.
+
+Support multiple sites under a single client-wide contract.
+
+Allow optional site-specific contracts.
+
+Use proper date validation.
+
+Do not allow unauthorized users to alter signed contract records.
+
+Maintain contract revision history.
+
+# 13. COMMERCIAL RATE MANAGEMENT
+
+Prepare the commercial rate structure for future Phase 7 Payroll and Phase 8 Billing.
+
+For each client, site and service, allow authorized administrators to define:
+
+- Service Name
+- Designation
+- Billing Rate
+- Rate Type
+- Effective From
+- Effective Until
+- Billing Unit
+- GST Treatment
+- Service Charge
+- Overtime Billing Policy
+- Additional Charges
+- Remarks
+
+Rate Types:
+
+- Per Employee Per Month
+- Per Employee Per Day
+- Per Hour
+- Fixed Monthly Contract
+- Custom Rate
+
+IMPORTANT:
+
+Maintain a strict distinction between:
+
+A. Client Billing Rate: Amount charged to the client.
+
+B. Employee Wage Rate: Amount payable to the employee.
+
+Never mix the two values.
+
+Store effective dates and historical rate changes.
+
+Only authorized roles can view or modify financial rates.
+
+Do not calculate complete salary or client invoices in Phase 5.
+
+Those will be implemented in Phase 7 and Phase 8.
+
+# 14. SITE DOCUMENT MANAGEMENT
+
+Create a secure document management section for each client and site.
+
+Supported documents:
+
+- Client Agreement
+- Site Agreement
+- Work Order
+- Purchase Order
+- Service Agreement
+- Site Instructions
+- Site Layout
+- Safety Documents
+- Compliance Documents
+- Other Attachments
+
+Document fields:
+
+- Document ID
+- Document Name
+- Document Type
+- Client ID
+- Site ID
+- File Reference
+- Upload Date
+- Expiry Date
+- Document Status
+- Uploaded By
+- Verified By
+- Remarks
+
+Features:
+
+- Upload
+- Preview
+- Download
+- Replace
+- Verify
+- Expiry Alerts
+- Search
+- Filter
+
+Use Firebase Storage with tenant-specific secure paths.
+
+Do not expose confidential contracts through public URLs.
+
+# 15. SITE MAP AND LOCATION MANAGEMENT
+
+Create a Site Location section.
+
+Features:
+
+- Display Site Address.
+- Display Latitude and Longitude.
+- Show Site on Map.
+- Search Site by Name or Code.
+- Filter by City or State.
+- View Multiple Site Locations.
+
+If Google Maps integration is configured, use the official Google Maps Platform.
+
+Store coordinates only when verified or entered by an authorized user.
+
+Do not invent locations.
+
+Prepare the location data for future Phase 6 GPS attendance verification.
+
+Do not implement geofenced attendance punching yet.
+
+# 16. CLIENT PORTAL PREPARATION
+
+Prepare the data architecture for the future Client Portal.
+
+Future client portal capabilities:
+
+- Client Login
+- View Assigned Sites
+- View Services
+- View Contract Details
+- View Assigned Manpower
+- View Attendance Reports
+- View Service Reports
+- View Invoices
+- Submit Complaints
+- Raise Service Requests
+
+In Phase 5:
+
+- Prepare client user relationships.
+- Prepare client-level access permissions.
+- Prepare client-site associations.
+- Prepare secure client account invitation architecture.
+
+Do not provide clients with Company Admin access.
+
+Do not expose internal company wage rates, employee bank details or confidential internal notes.
+
+Do not build the full Client Portal in this phase.
+
+# 17. CLIENT AND SITE REPORTS
+
+Create professional reports.
+
+Client Reports:
+
+- All Clients
+- Active Clients
+- Inactive Clients
+- Client-Wise Site Count
+- Client Contract Status
+- Expiring Contracts
+
+Site Reports:
+
+- All Sites
+- Active Sites
+- Inactive Sites
+- City-Wise Sites
+- Service-Wise Sites
+- Site-Wise Manpower Requirement
+- Site-Wise Employee Deployment
+- Vacant Positions
+- Site Supervisor Report
+
+Provide:
+
+- Search
+- Filters
+- Sorting
+- Date Range
+- CSV Export
+- PDF Export
+- Print
+
+Restrict financial report columns based on user permissions.
+
+# 18. NOTIFICATIONS AND ALERTS
+
+Prepare a notification system for:
+
+- Contract Expiry
+- Site Contract Renewal
+- Site Inactive
+- Manpower Shortage
+- Employee Assignment Expiry
+- Missing Site Documents
+- Supervisor Assignment Changes
+
+Use Firebase Cloud Messaging where configured.
+
+Provide an in-app notification interface.
+
+Notifications must be tenant-specific and permission-aware.
+
+# 19. FIRESTORE DATABASE ARCHITECTURE
+
+Continue the existing tenant structure.
+
+Suggested collections:
+
+tenants/{tenantId}/clients/{clientId}
+
+tenants/{tenantId}/sites/{siteId}
+
+tenants/{tenantId}/contracts/{contractId}
+
+tenants/{tenantId}/siteServices/{serviceId}
+
+tenants/{tenantId}/siteRequirements/{requirementId}
+
+tenants/{tenantId}/assignments/{assignmentId}
+
+tenants/{tenantId}/siteSupervisors/{supervisorId}
+
+tenants/{tenantId}/clientDocuments/{documentId}
+
+tenants/{tenantId}/siteDocuments/{documentId}
+
+tenants/{tenantId}/clientContacts/{contactId}
+
+tenants/{tenantId}/clientUsers/{userId}
+
+tenants/{tenantId}/siteCounters/{counterId}
+
+tenants/{tenantId}/clientCounters/{counterId}
+
+tenants/{tenantId}/siteRateHistory/{rateId}
+
+tenants/{tenantId}/auditLogs/{logId}
+
+Use appropriate fields:
+
+- tenantId
+- clientId
+- siteId
+- employeeId
+- assignmentId
+- createdAt
+- updatedAt
+- createdBy
+- updatedBy
+- status
+
+Use Firestore references or stable identifiers consistently.
+
+Do not store large documents inside Firestore.
+
+Store files in Firebase Storage and metadata in Firestore.
+
+Create appropriate composite indexes for filtering and querying.
+
+Avoid unbounded collection reads.
+
+Use pagination.
+
+Use server timestamps.
+
+Preserve existing Phase 1–4 records.
+
+Do not create duplicate or conflicting collections if equivalent collections already exist.
+
+# 20. BACKEND API ARCHITECTURE
+
+Use the existing secure backend architecture.
+
+Proposed API endpoints:
+
+CLIENT:
+
+POST /api/clients
+GET /api/clients
+GET /api/clients/:clientId
+PUT /api/clients/:clientId
+POST /api/clients/:clientId/archive
+
+SITE:
+
+POST /api/sites
+GET /api/sites
+GET /api/sites/:siteId
+PUT /api/sites/:siteId
+POST /api/sites/:siteId/qr
+POST /api/sites/:siteId/archive
+
+ASSIGNMENT:
+
+POST /api/assignments
+GET /api/assignments
+PUT /api/assignments/:assignmentId
+POST /api/assignments/:assignmentId/transfer
+
+CONTRACT:
+
+POST /api/contracts
+GET /api/contracts
+PUT /api/contracts/:contractId
+POST /api/contracts/:contractId/renew
+
+REQUIREMENTS:
+
+POST /api/sites/:siteId/requirements
+GET /api/sites/:siteId/requirements
+
+These are proposed API routes. Adapt them to the existing backend conventions.
+
+Every API must:
+
+- Verify Firebase ID Token.
+- Verify tenant membership.
+- Verify role and permissions.
+- Validate input.
+- Verify record ownership.
+- Prevent cross-tenant access.
+- Return consistent responses.
+- Log important operations.
+- Handle errors securely.
+
+Never trust tenantId supplied only by the frontend.
+
+# 21. ROLE AND PERMISSION CONTROL
+
+Integrate Phase 3 Role and Permission Management.
+
+Suggested permissions:
+
+CLIENT:
+
+- client.view
+- client.create
+- client.edit
+- client.archive
+- client.export
+
+SITE:
+
+- site.view
+- site.create
+- site.edit
+- site.archive
+- site.export
+- site.location.manage
+
+CONTRACT:
+
+- contract.view
+- contract.create
+- contract.edit
+- contract.approve
+- contract.renew
+- contract.terminate
+
+ASSIGNMENT:
+
+- assignment.view
+- assignment.create
+- assignment.edit
+- assignment.transfer
+- assignment.cancel
+
+MANPOWER:
+
+- site.requirement.view
+- site.requirement.manage
+
+COMMERCIAL:
+
+- site.rate.view
+- site.rate.manage
+
+DOCUMENTS:
+
+- client.documents.view
+- client.documents.upload
+- site.documents.view
+- site.documents.upload
+- site.documents.download
+- site.documents.verify
+
+Only authorized roles can perform their assigned actions.
+
+All access controls must be enforced by backend authorization and Firestore Security Rules where applicable.
+
+Frontend button hiding is not sufficient.
+
+# 22. USER INTERFACE REQUIREMENTS
+
+Maintain the existing Happiiz HR design system.
+
+Create a professional sidebar:
+
+- Dashboard
+- Clients
+- Sites
+- Contracts
+- Site Services
+- Manpower Requirements
+- Employee Deployment
+- Site Supervisors
+- Site Documents
+- Site Reports
+- Settings
+
+Create:
+
+A. Client Dashboard
+
+B. Client List
+
+C. Client Registration Form
+
+D. Client Profile
+
+E. Site Dashboard
+
+F. Site List
+
+G. Site Registration Form
+
+H. Site Detail Page
+
+I. Site QR Code Page
+
+J. Site Employee Deployment Page
+
+K. Contract Management Page
+
+L. Manpower Requirement Page
+
+M. Site Documents Page
+
+N. Client and Site Reports
+
+Design standards:
+
+- Premium blue and white theme.
+- Responsive layout.
+- Professional data tables.
+- Advanced search.
+- Filters and pagination.
+- Clear status indicators.
+- Professional forms.
+- Confirmation dialogs.
+- Loading states.
+- Error messages.
+- Empty states.
+- Mobile responsive experience.
+
+Every visible functional button must perform a real action.
+
+Do not create fake UI interactions.
+
+# 23. INTEGRATION WITH EXISTING PHASES
+
+PHASE 1:
+Reuse Firebase and authentication foundation.
+
+PHASE 2:
+Reuse Super Admin and subscription architecture.
+
+PHASE 3:
+Reuse Company Admin, departments, branches, roles and permissions.
+
+PHASE 4:
+Reuse employee records, employee IDs, employee status and employment information.
+
+PHASE 5:
+Build Clients, Sites, Contracts, Requirements, Site Codes, QR Codes and Employee Deployment.
+
+Prepare data structures for:
+
+PHASE 6: Attendance and Duty Roster.
+
+PHASE 7: Payroll.
+
+PHASE 8: Billing and Accounts.
+
+Do not implement complete attendance, payroll or invoicing in Phase 5.
+
+# 24. BUSINESS VALIDATION RULES
+
+Implement these important rules:
+
+1. A client must belong to one tenant.
+2. A site must belong to a valid client and tenant.
+3. Site Codes must be unique within the tenant.
+4. Client IDs must be unique within the tenant.
+5. An employee assignment must reference a valid employee.
+6. Employees from another tenant cannot be assigned.
+7. Inactive employees cannot receive active assignments.
+8. Site requirement counts cannot be negative.
+9. Assigned employee counts must come from actual assignments.
+10. A site cannot be assigned to a different tenant's client.
+11. Expired contracts must be clearly identified.
+12. Historical contracts and assignments must be preserved.
+13. Client billing rates and employee wage rates must remain separate.
+14. Unauthorized users must not see financial information.
+15. Site deletion must not silently delete its historical data.
+
+Use backend transactions for operations involving multiple related records.
+
+# 25. TESTING REQUIREMENTS
+
+Test the following:
+
+CLIENT:
+- Client Registration
+- Client Editing
+- Client Search
+- Client Profile
+- Client Archiving
+
+SITE:
+- Site Registration
+- Site Code Generation
+- Site QR Generation
+- Site Location
+- Site Editing
+- Site Status
+
+CONTRACT:
+- Contract Creation
+- Contract Renewal
+- Contract Expiry
+- Contract Document Upload
+
+MANPOWER:
+- Service Creation
+- Employee Requirement
+- Employee Assignment
+- Employee Transfer
+- Supervisor Assignment
+- Vacancy Calculation
+
+SECURITY:
+- Tenant Isolation
+- Role Permissions
+- Unauthorized Access
+- Document Access Protection
+- Financial Rate Protection
+
+INTEGRATION:
+- Existing Employee Records
+- Existing Subscription Limits
+- Existing Branches
+- Existing Departments
+
+Use multiple test tenants and verify actual backend access restrictions.
+
+Do not report tests as successful unless they were executed.
+
+# 26. DEVELOPMENT RULES
+
+- Continue the existing project.
+- Do not create a new application.
+- Do not replace Firebase.
+- Do not remove existing features.
+- Do not break Phase 1–4.
+- Do not use fake production records.
+- Do not expose confidential client documents.
+- Do not expose employee salary data to clients.
+- Do not use public QR codes containing sensitive data.
+- Do not create fake API responses.
+- Do not hardcode tenant identifiers.
+- Do not implement complete attendance or payroll yet.
+- Do not skip backend authorization.
+- Keep the code modular.
+- Explain all manual configuration in simple language.
+
+# 27. PHASE 5 FINAL DELIVERABLES
+
+At completion, provide:
+
+1. Complete Client Management Dashboard.
+2. Client Registration.
+3. Client Profile Management.
+4. Multiple Site Management.
+5. Automatic Client ID Generation.
+6. Automatic Site Code Generation.
+7. Unique Site QR Code Generation.
+8. Site Location Management.
+9. Site Service Management.
+10. Manpower Requirement Management.
+11. Employee Deployment Management.
+12. Site Supervisor Assignment.
+13. Client Contract Management.
+14. Commercial Rate Management.
+15. Client and Site Documents.
+16. Site Reports.
+17. Client Reports.
+18. Notification Foundation.
+19. Client Portal Preparation.
+20. Firebase Database Integration.
+21. Backend API Integration.
+22. Permission and Security Integration.
+23. Testing Report.
+24. Updated Documentation.
+
+# 28. FINAL EXECUTION INSTRUCTION
+
+First inspect the complete existing Happiiz HR project.
+
+Identify the existing Phase 1, Phase 2, Phase 3 and Phase 4 implementation.
+
+Reuse existing components, collections, services, permissions and APIs.
+
+Develop Phase 5 in manageable modules.
+
+After each module:
+
+- Check frontend functionality.
+- Check Firestore data persistence.
+- Check backend API responses.
+- Verify tenant isolation.
+- Verify permissions.
+- Verify existing functionality remains intact.
+
+Do not stop at generating UI screens.
+
+Build real, working, secure database operations.
+
+If any configuration is missing, explain the exact steps required.
+
+At completion, provide a detailed development and testing report.
+
+FINAL GOAL:
+
+Build a complete, professional, secure and scalable Client & Site Management System for Happiiz HR that can manage multiple clients, multiple sites, site-specific contracts, services, manpower requirements, employee deployment and QR-based site identification without breaking any existing functionality.

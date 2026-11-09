@@ -1,0 +1,428 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile representing system operators, company admins, employees, and clients",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User primary email address" },
+        "displayName": { "type": "string", "maxLength": 100, "description": "Full name of the user" },
+        "role": { "type": "string", "enum": ["super_admin", "company_admin", "employee", "client"], "description": "Global or tenant access role" },
+        "tenantId": { "type": "string", "maxLength": 64, "description": "Associated Tenant / Company ID for tenant isolation" },
+        "companyId": { "type": "string", "maxLength": 64, "description": "Foreign key to companies collection" },
+        "associatedCompany": { "type": "string", "maxLength": 120, "description": "Company name association" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Contact phone number" },
+        "avatarUrl": { "type": "string", "description": "Profile picture URL" },
+        "status": { "type": "string", "enum": ["active", "suspended", "pending"], "description": "Account status" },
+        "createdAt": { "type": "string", "description": "ISO timestamp or server timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp or server timestamp" }
+      },
+      "required": ["uid", "email", "displayName", "role", "status", "createdAt"]
+    },
+    "Company": {
+      "title": "Company",
+      "description": "Enterprise tenant record representing a registered security, housekeeping, manpower, or facility management company",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "description": "Unique company document ID" },
+        "tenantId": { "type": "string", "maxLength": 64, "description": "Unique immutable tenant identifier" },
+        "name": { "type": "string", "maxLength": 120, "description": "Registered company business name" },
+        "industry": { "type": "string", "enum": ["security", "housekeeping", "manpower", "facility_management", "other"], "description": "Primary industry sector" },
+        "companyType": { "type": "string", "maxLength": 80, "description": "Sector label such as Security Agency, Housekeeping Company, etc." },
+        "ownerName": { "type": "string", "maxLength": 100, "description": "Company director or owner name" },
+        "adminEmail": { "type": "string", "format": "email", "description": "Primary company administrator email" },
+        "adminName": { "type": "string", "maxLength": 100, "description": "Primary admin full name" },
+        "phone": { "type": "string", "maxLength": 25, "description": "Primary business contact phone" },
+        "website": { "type": "string", "maxLength": 150, "description": "Company website" },
+        "address": { "type": "string", "maxLength": 250, "description": "Headquarters address" },
+        "city": { "type": "string", "maxLength": 80, "description": "City" },
+        "state": { "type": "string", "maxLength": 80, "description": "State / Province" },
+        "pinCode": { "type": "string", "maxLength": 20, "description": "Postal code" },
+        "country": { "type": "string", "maxLength": 50, "description": "Country of operation" },
+        "currency": { "type": "string", "maxLength": 10, "description": "Operating billing currency (e.g. INR)" },
+        "taxId": { "type": "string", "maxLength": 40, "description": "GSTIN or Corporate Tax ID" },
+        "gstNumber": { "type": "string", "maxLength": 40, "description": "Official GST identification number" },
+        "description": { "type": "string", "maxLength": 500, "description": "Business scope and operational description" },
+        "subscriptionPlan": { "type": "string", "enum": ["micro", "starter", "growth", "enterprise", "custom"], "description": "Active subscription tier" },
+        "subscriptionStatus": { "type": "string", "enum": ["active", "trial", "suspended", "cancelled", "pending"], "description": "Billing status" },
+        "verificationStatus": { "type": "string", "enum": ["verified", "pending", "rejected"], "description": "KYC onboarding verification status" },
+        "approvalNotes": { "type": "string", "maxLength": 500, "description": "Admin notes regarding verification decision" },
+        "isArchived": { "type": "boolean", "description": "Safe retention archival flag" },
+        "employeeCount": { "type": "number", "description": "Current active workforce headcount" },
+        "maxEmployees": { "type": "number", "description": "Maximum licensed workforce capacity" },
+        "monthlyFee": { "type": "number", "description": "Monthly recurring SaaS fee in base currency" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["id", "tenantId", "name", "industry", "adminEmail", "subscriptionPlan", "subscriptionStatus", "createdAt"]
+    },
+    "SubscriptionPlanItem": {
+      "title": "SubscriptionPlanItem",
+      "description": "Configurable SaaS subscription pricing tier",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 60 },
+        "code": { "type": "string", "maxLength": 30 },
+        "minEmployees": { "type": "number" },
+        "maxEmployees": { "type": "number" },
+        "pricePerEmployee": { "type": "number" },
+        "minMonthlyFee": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "inactive", "archived"] }
+      },
+      "required": ["id", "name", "code", "minMonthlyFee", "status"]
+    },
+    "TenantSubscription": {
+      "title": "TenantSubscription",
+      "description": "Tenant subscription account terms and renewal state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyName": { "type": "string", "maxLength": 120 },
+        "planCode": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string" },
+        "calculatedMonthlyFee": { "type": "number" },
+        "nextRenewalDate": { "type": "string" }
+      },
+      "required": ["id", "companyId", "tenantId", "planCode", "status"]
+    },
+    "SubscriptionInvoice": {
+      "title": "SubscriptionInvoice",
+      "description": "Official GST tax invoice issued to a tenant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "invoiceNumber": { "type": "string", "maxLength": 40 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["paid", "pending", "overdue", "void", "cancelled"] }
+      },
+      "required": ["id", "invoiceNumber", "companyId", "tenantId", "totalAmount", "status"]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Settled transaction or manual remittance record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "invoiceId": { "type": "string", "maxLength": 64 },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string" },
+        "transactionReference": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "companyId", "tenantId", "totalAmount", "status", "transactionReference"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer inquiry or support escalation ticket",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "ticketCode": { "type": "string", "maxLength": 30 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "subject": { "type": "string", "maxLength": 150 },
+        "status": { "type": "string" },
+        "priority": { "type": "string" }
+      },
+      "required": ["id", "ticketCode", "companyId", "subject", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System-wide and tenant-specific immutable audit logging for security compliance",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "description": "Audit event ID" },
+        "tenantId": { "type": "string", "maxLength": 64, "description": "Associated Tenant ID, or 'system' for super admin operations" },
+        "actorUid": { "type": "string", "maxLength": 64, "description": "UID of user performing action" },
+        "actorEmail": { "type": "string", "description": "Email of user performing action" },
+        "action": { "type": "string", "maxLength": 100, "description": "Event action name" },
+        "category": { "type": "string", "description": "Audit event category" },
+        "details": { "type": "string", "maxLength": 500, "description": "Human readable description of the event" },
+        "timestamp": { "type": "string", "description": "Event timestamp" }
+      },
+      "required": ["id", "tenantId", "actorEmail", "action", "category", "timestamp"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Inquiry submitted through public website consultation form",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "companyName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "format": "email" },
+        "message": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "name", "companyName", "email", "message", "timestamp"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Complete workforce member profile (Guard, Cleaner, Supervisor) scoped to a tenant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "employeeCode": { "type": "string", "maxLength": 30 },
+        "fullName": { "type": "string", "maxLength": 100 },
+        "designation": { "type": "string", "maxLength": 60 },
+        "department": { "type": "string", "maxLength": 80 },
+        "branch": { "type": "string", "maxLength": 80 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["draft", "pending_joining", "active", "inactive", "on_leave", "suspended", "resigned", "terminated", "archived"] },
+        "category": { "type": "string", "maxLength": 60 },
+        "employmentType": { "type": "string", "maxLength": 40 },
+        "documentVerificationStatus": { "type": "string", "enum": ["pending", "uploaded", "under_review", "verified", "rejected", "expired"] },
+        "dateOfJoining": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "tenantId", "companyId", "employeeCode", "fullName", "designation", "status"]
+    },
+    "EmployeeDocument": {
+      "title": "EmployeeDocument",
+      "description": "Tenant employee verification document and KYC file metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "documentType": { "type": "string", "maxLength": 60 },
+        "fileName": { "type": "string", "maxLength": 150 },
+        "fileSizeKb": { "type": "number" },
+        "fileUrl": { "type": "string" },
+        "verificationStatus": { "type": "string", "enum": ["pending", "uploaded", "under_review", "verified", "rejected", "expired"] },
+        "uploadDate": { "type": "string" }
+      },
+      "required": ["id", "employeeId", "tenantId", "companyId", "documentType", "fileName", "verificationStatus"]
+    },
+    "EmployeeAgreement": {
+      "title": "EmployeeAgreement",
+      "description": "Employment service contract and terms agreement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "employeeCode": { "type": "string", "maxLength": 30 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "agreementTitle": { "type": "string", "maxLength": 120 },
+        "status": { "type": "string", "enum": ["draft", "generated", "awaiting_signature", "signed", "active", "expired", "terminated"] },
+        "startDate": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "employeeId", "tenantId", "companyId", "agreementTitle", "status", "startDate"]
+    },
+    "EmployeeExitRecord": {
+      "title": "EmployeeExitRecord",
+      "description": "Employee resignation, clearance checklist, and relieving letter track",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "resignationDate": { "type": "string" },
+        "lastWorkingDate": { "type": "string" },
+        "exitReason": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["submitted", "under_review", "approved", "settled", "archived"] }
+      },
+      "required": ["id", "employeeId", "tenantId", "companyId", "resignationDate", "lastWorkingDate", "status"]
+    },
+    "ClientSite": {
+      "title": "ClientSite",
+      "description": "Customer location or deployment site managed by a company tenant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "siteId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "siteName": { "type": "string", "maxLength": 100 },
+        "clientName": { "type": "string", "maxLength": 100 },
+        "siteCode": { "type": "string", "maxLength": 30 },
+        "address": { "type": "string", "maxLength": 250 },
+        "city": { "type": "string", "maxLength": 80 },
+        "state": { "type": "string", "maxLength": 80 },
+        "pinCode": { "type": "string", "maxLength": 20 },
+        "contactPerson": { "type": "string", "maxLength": 100 },
+        "contactNumber": { "type": "string", "maxLength": 40 },
+        "siteType": { "type": "string", "maxLength": 60 },
+        "requiredEmployees": { "type": "number" },
+        "shiftDetails": { "type": "string", "maxLength": 150 },
+        "status": { "type": "string", "enum": ["active", "pending", "completed"] },
+        "createdBy": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "tenantId", "companyId", "clientName", "siteName", "status"]
+    },
+    "CompanyUser": {
+      "title": "CompanyUser",
+      "description": "Tenant-scoped staff and managerial user account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "fullName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email" },
+        "mobileNumber": { "type": "string", "maxLength": 30 },
+        "designation": { "type": "string", "maxLength": 80 },
+        "department": { "type": "string", "maxLength": 80 },
+        "branch": { "type": "string", "maxLength": 80 },
+        "assignedRoleId": { "type": "string", "maxLength": 64 },
+        "assignedRoleName": { "type": "string", "maxLength": 80 },
+        "accountStatus": { "type": "string", "enum": ["active", "deactivated", "suspended"] }
+      },
+      "required": ["id", "companyId", "tenantId", "fullName", "email", "assignedRoleId", "accountStatus"]
+    },
+    "CompanyRole": {
+      "title": "CompanyRole",
+      "description": "Custom or system default role with configured modular permission list",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "roleName": { "type": "string", "maxLength": 100 },
+        "roleCode": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 300 },
+        "isSystemRole": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      },
+      "required": ["id", "companyId", "tenantId", "roleName", "roleCode", "status"]
+    },
+    "CompanyDepartment": {
+      "title": "CompanyDepartment",
+      "description": "Organizational department division within a company tenant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "code": { "type": "string", "maxLength": 30 },
+        "description": { "type": "string", "maxLength": 300 },
+        "headOfDepartment": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      },
+      "required": ["id", "companyId", "tenantId", "name", "code", "status"]
+    },
+    "CompanyBranch": {
+      "title": "CompanyBranch",
+      "description": "Regional branch office with unique code and jurisdiction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "companyId": { "type": "string", "maxLength": 64 },
+        "tenantId": { "type": "string", "maxLength": 64 },
+        "branchName": { "type": "string", "maxLength": 100 },
+        "branchCode": { "type": "string", "maxLength": 30 },
+        "city": { "type": "string", "maxLength": 80 },
+        "state": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      },
+      "required": ["id", "companyId", "tenantId", "branchName", "branchCode", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile documents with role and tenant mapping"
+    },
+    "/companies/{companyId}": {
+      "schema": { "$ref": "#/entities/Company" },
+      "description": "Master enterprise tenant records containing company profile and subscription details"
+    },
+    "/companies/{companyId}/employees/{employeeId}": {
+      "schema": { "$ref": "#/entities/Employee" },
+      "description": "Tenant-scoped employee roster with strict multi-tenant isolation"
+    },
+    "/companies/{companyId}/employees/{employeeId}/documents/{docId}": {
+      "schema": { "$ref": "#/entities/EmployeeDocument" },
+      "description": "Tenant-scoped employee KYC documents and certificates"
+    },
+    "/companies/{companyId}/employees/{employeeId}/agreements/{agreementId}": {
+      "schema": { "$ref": "#/entities/EmployeeAgreement" },
+      "description": "Tenant-scoped employee service contracts and agreements"
+    },
+    "/companies/{companyId}/employees/{employeeId}/exitRecords/{exitId}": {
+      "schema": { "$ref": "#/entities/EmployeeExitRecord" },
+      "description": "Tenant-scoped employee resignation and clearance records"
+    },
+    "/companies/{companyId}/sites/{siteId}": {
+      "schema": { "$ref": "#/entities/ClientSite" },
+      "description": "Tenant-scoped deployment sites and client accounts"
+    },
+    "/companies/{companyId}/clients/{clientId}": {
+      "schema": { "$ref": "#/entities/Client" },
+      "description": "Tenant-scoped registered corporate and institutional clients"
+    },
+    "/companies/{companyId}/contracts/{contractId}": {
+      "schema": { "$ref": "#/entities/ClientContract" },
+      "description": "Tenant-scoped client service level agreements and commercial contracts"
+    },
+    "/companies/{companyId}/deployments/{deploymentId}": {
+      "schema": { "$ref": "#/entities/EmployeeDeployment" },
+      "description": "Tenant-scoped workforce deployment assignments to client sites"
+    },
+    "/companies/{companyId}/sites/{siteId}/requirements/{reqId}": {
+      "schema": { "$ref": "#/entities/SiteManpowerRequirement" },
+      "description": "Site-level manpower requirements and shift posts"
+    },
+    "/companies/{companyId}/users/{userId}": {
+      "schema": { "$ref": "#/entities/CompanyUser" },
+      "description": "Tenant-scoped staff and managerial user accounts"
+    },
+    "/companies/{companyId}/roles/{roleId}": {
+      "schema": { "$ref": "#/entities/CompanyRole" },
+      "description": "Tenant-scoped custom and default RBAC roles"
+    },
+    "/companies/{companyId}/departments/{deptId}": {
+      "schema": { "$ref": "#/entities/CompanyDepartment" },
+      "description": "Tenant-scoped business departments"
+    },
+    "/companies/{companyId}/branches/{branchId}": {
+      "schema": { "$ref": "#/entities/CompanyBranch" },
+      "description": "Tenant-scoped regional branch hubs"
+    },
+    "/platform_plans/{planId}": {
+      "schema": { "$ref": "#/entities/SubscriptionPlanItem" },
+      "description": "Dynamic pricing plans managed by Super Admin"
+    },
+    "/platform_subscriptions/{subId}": {
+      "schema": { "$ref": "#/entities/TenantSubscription" },
+      "description": "Active tenant subscriptions and renewal dates"
+    },
+    "/platform_invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/SubscriptionInvoice" },
+      "description": "GST tax invoices generated for subscriptions"
+    },
+    "/platform_payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/PaymentRecord" },
+      "description": "Settled payments and manual receipts"
+    },
+    "/platform_tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Support tickets raised across tenants"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Immutable security and administrative audit log trail"
+    },
+    "/contact_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Inquiries submitted via the public website contact section"
+    }
+  }
+}

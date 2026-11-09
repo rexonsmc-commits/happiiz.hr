@@ -1,0 +1,379 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net (Default-Deny Catch-All)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Diagnostic connection test endpoint (Required by Firebase skill)
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isCurrentUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && (
+        request.auth.uid == 'myHfxnY2nnVBsbwrg3vgu6PhNSR2' ||
+        request.auth.token.email in ['superadmin@happiizhr.com', 'rexon.smc@gmail.com'] ||
+        request.auth.token.role == 'platform_owner' ||
+        request.auth.token.superAdmin == true
+      );
+    }
+
+    function isSuperAdmin() {
+      return isBootstrappedAdmin() || (
+        isSignedIn() && (
+          (
+            exists(/databases/$(database)/documents/platform_administrators/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/platform_administrators/$(request.auth.uid)).data.status == 'active'
+          ) || (
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['super_admin', 'platform_owner']
+          )
+        )
+      );
+    }
+
+    function isCompanyAdmin(companyId) {
+      return isSuperAdmin() || (
+        isSignedIn() && (
+          (
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['company_admin', 'site_admin', 'hr_admin']
+          ) || (
+            exists(/databases/$(database)/documents/companies/$(companyId)) &&
+            get(/databases/$(database)/documents/companies/$(companyId)).data.adminEmail == request.auth.token.email
+          )
+        )
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation for User entity
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'status', 'createdAt']) &&
+        data.uid is string && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() <= 120 &&
+        data.displayName is string && data.displayName.size() <= 100 &&
+        data.role in ['platform_owner', 'super_admin', 'company_admin', 'hr_admin', 'site_admin', 'supervisor', 'employee', 'client'] &&
+        data.status in ['active', 'suspended', 'pending'];
+    }
+
+    // Validation for Company entity
+    function isValidCompany(data) {
+      return data.keys().hasAll(['id', 'tenantId', 'name', 'industry', 'adminEmail', 'subscriptionPlan', 'subscriptionStatus', 'createdAt']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.tenantId is string && data.tenantId.size() <= 64 &&
+        data.name is string && data.name.size() <= 120 &&
+        data.industry in ['security', 'housekeeping', 'manpower', 'facility_management', 'other'] &&
+        data.adminEmail is string && data.adminEmail.size() <= 120 &&
+        data.subscriptionPlan in ['micro', 'starter', 'growth', 'enterprise', 'custom'] &&
+        data.subscriptionStatus in ['active', 'trial', 'suspended', 'cancelled', 'pending'];
+    }
+
+    // Validation for Employee entity
+    function isValidEmployee(data) {
+      return data.keys().hasAll(['id', 'tenantId', 'companyId', 'employeeCode', 'fullName', 'designation', 'status']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.tenantId is string && data.tenantId.size() <= 64 &&
+        data.companyId is string && data.companyId.size() <= 64 &&
+        data.employeeCode is string && data.employeeCode.size() <= 30 &&
+        data.fullName is string && data.fullName.size() <= 100 &&
+        data.designation is string && data.designation.size() <= 60 &&
+        data.status in ['draft', 'pending_joining', 'active', 'inactive', 'on_leave', 'suspended', 'resigned', 'terminated', 'archived'];
+    }
+
+    // Validation for ClientSite entity
+    function isValidSite(data) {
+      return data.keys().hasAll(['id', 'tenantId', 'companyId', 'clientName', 'siteName', 'status']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.tenantId is string && data.tenantId.size() <= 64 &&
+        data.companyId is string && data.companyId.size() <= 64 &&
+        data.clientName is string && data.clientName.size() <= 100 &&
+        data.siteName is string && data.siteName.size() <= 100 &&
+        data.status in ['active', 'pending', 'inactive', 'completed', 'archived'] &&
+        (!('siteCode' in data) || (data.siteCode is string && data.siteCode.size() <= 40)) &&
+        (!('clientId' in data) || (data.clientId is string && data.clientId.size() <= 64)) &&
+        (!('address' in data) || (data.address is string && data.address.size() <= 250)) &&
+        (!('city' in data) || (data.city is string && data.city.size() <= 80)) &&
+        (!('state' in data) || (data.state is string && data.state.size() <= 80)) &&
+        (!('pinCode' in data) || (data.pinCode is string && data.pinCode.size() <= 20)) &&
+        (!('contactPerson' in data) || (data.contactPerson is string && data.contactPerson.size() <= 100)) &&
+        (!('contactNumber' in data) || (data.contactNumber is string && data.contactNumber.size() <= 40)) &&
+        (!('requiredEmployees' in data) || data.requiredEmployees is number) &&
+        (!('shiftDetails' in data) || (data.shiftDetails is string && data.shiftDetails.size() <= 150));
+    }
+
+    // Validation for AuditLog entity
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['id', 'tenantId', 'actorEmail', 'action', 'category', 'timestamp']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.tenantId is string && data.tenantId.size() <= 64 &&
+        data.actorEmail is string && data.actorEmail.size() <= 120 &&
+        data.action is string && data.action.size() <= 100 &&
+        data.category in ['auth', 'security', 'billing', 'tenant', 'workforce', 'approval', 'settings', 'role'];
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isCurrentUser(userId) || isSuperAdmin());
+      allow list: if isSuperAdmin();
+      allow create: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (
+        isCurrentUser(userId) || isSuperAdmin()
+      );
+      allow update: if isSignedIn() && isValidId(userId) && isValidUser(incoming()) && (
+        isSuperAdmin() ||
+        (isCurrentUser(userId) && incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName', 'phone', 'avatarUrl', 'companyId', 'tenantId', 'associatedCompany', 'updatedAt'
+        ]))
+      );
+      allow delete: if isSuperAdmin();
+    }
+
+    // Companies Collection (Multi-Tenant Master Registry)
+    match /companies/{companyId} {
+      allow get: if isSuperAdmin() || isCompanyAdmin(companyId);
+      allow list: if isSuperAdmin();
+      allow create: if isSuperAdmin() || (isSignedIn() && isValidId(companyId) && isValidCompany(incoming()));
+      allow update: if isValidId(companyId) && (
+        isSuperAdmin() ||
+        (
+          isCompanyAdmin(companyId) &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'name', 'phone', 'website', 'address', 'city', 'state', 'pinCode',
+            'gstNumber', 'taxId', 'description', 'ownerName', 'adminName',
+            'adminEmail', 'logoUrl', 'primaryColor', 'companyType', 'updatedAt'
+          ])
+        )
+      );
+      allow delete: if isSuperAdmin();
+
+      // Subcollection: Tenant Employees (Scoped Data Isolation)
+      match /employees/{employeeId} {
+        allow get: if isCompanyAdmin(companyId);
+        allow list: if isCompanyAdmin(companyId);
+        allow create: if isCompanyAdmin(companyId) && isValidId(employeeId) && isValidEmployee(incoming()) && incoming().companyId == companyId;
+        allow update: if isCompanyAdmin(companyId) && isValidId(employeeId) && isValidEmployee(incoming()) && incoming().companyId == companyId;
+        allow delete: if isCompanyAdmin(companyId);
+
+        // Employee subcollection: KYC & Certificates
+        match /documents/{docId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(docId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+
+        // Employee subcollection: Service Agreements
+        match /agreements/{agreementId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(agreementId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+
+        // Employee subcollection: Exit & Relieving Records
+        match /exitRecords/{exitId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(exitId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+      }
+
+      // Subcollection: Tenant Client Sites
+      match /sites/{siteId} {
+        allow get: if isCompanyAdmin(companyId);
+        allow list: if isCompanyAdmin(companyId);
+        allow create: if isCompanyAdmin(companyId) && isValidId(siteId) && isValidSite(incoming()) && incoming().companyId == companyId;
+        allow update: if isCompanyAdmin(companyId) && isValidId(siteId) && isValidSite(incoming()) && incoming().companyId == companyId;
+        allow delete: if isCompanyAdmin(companyId);
+
+        // Site subcollection: Manpower Requirements
+        match /requirements/{reqId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(reqId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+
+        // Site subcollection: Services
+        match /services/{serviceId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(serviceId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+
+        // Site subcollection: Documents
+        match /documents/{docId} {
+          allow get, list: if isCompanyAdmin(companyId);
+          allow create, update: if isCompanyAdmin(companyId) && isValidId(docId);
+          allow delete: if isCompanyAdmin(companyId);
+        }
+      }
+
+      // Phase 5 Subcollection: Registered Clients
+      match /clients/{clientId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(clientId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 5 Subcollection: Client Service Contracts & SLAs
+      match /contracts/{contractId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(contractId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 5 Subcollection: Employee Deployments & Post Assignments
+      match /deployments/{deploymentId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(deploymentId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 5 Subcollection: Commercial Rates (Billing vs Wages)
+      match /rates/{rateId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(rateId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 5 Subcollection: Site Documents Vault
+      match /siteDocuments/{docId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(docId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 3 Subcollection: Tenant Users (Staff & Admin Accounts)
+      match /users/{userId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(userId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 3 Subcollection: Tenant Roles & Configurable Permissions
+      match /roles/{roleId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(roleId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 3 Subcollection: Tenant Departments
+      match /departments/{deptId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(deptId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 3 Subcollection: Tenant Branch Offices
+      match /branches/{branchId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(branchId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 3 Subcollection: Tenant Settings & Configurations
+      match /settings/{settingId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(settingId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+    }
+
+    // Top-Level Tenant Mirror Path
+    match /tenants/{tenantId}/sites/{siteId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(siteId) && isValidSite(incoming());
+      allow delete: if isSuperAdmin();
+    }
+
+    // Phase 2: Platform Subscription Plans
+    match /platform_plans/{planId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin() && isValidId(planId);
+    }
+
+    // Phase 2: Tenant Subscriptions
+    match /platform_subscriptions/{subId} {
+      allow get: if isSuperAdmin() || (isSignedIn() && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId);
+      allow list: if isSuperAdmin();
+      allow write: if isSuperAdmin() && isValidId(subId);
+    }
+
+    // Phase 2: Platform Invoices
+    match /platform_invoices/{invoiceId} {
+      allow get: if isSuperAdmin() || (isSignedIn() && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId);
+      allow list: if isSuperAdmin();
+      allow write: if isSuperAdmin() && isValidId(invoiceId);
+    }
+
+    // Phase 2: Platform Payments
+    match /platform_payments/{paymentId} {
+      allow get: if isSuperAdmin() || (isSignedIn() && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId);
+      allow list: if isSuperAdmin();
+      allow write: if isSuperAdmin() && isValidId(paymentId);
+    }
+
+    // Phase 2: Platform Settings
+    match /platform_settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin() && isValidId(settingId);
+    }
+
+    // Phase 2: Platform Administrators
+    match /platform_administrators/{adminId} {
+      allow read, write: if isSuperAdmin() && isValidId(adminId);
+    }
+
+    // Protected Platform Records (Administrators & Core System Configuration)
+    match /platform/{document=**} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    // Phase 2: Support Tickets
+    match /platform_tickets/{ticketId} {
+      allow get: if isSuperAdmin() || (isSignedIn() && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId);
+      allow list: if isSuperAdmin() || isSignedIn();
+      allow create: if isSignedIn() && isValidId(ticketId);
+      allow update: if isSuperAdmin() || (isSignedIn() && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId);
+      allow delete: if isSuperAdmin();
+    }
+
+    // Audit Logs Collection (Append-Only Immutable System Trail)
+    match /audit_logs/{logId} {
+      allow get: if isSuperAdmin();
+      allow list: if isSuperAdmin();
+      allow create: if isSignedIn() && isValidId(logId) && isValidAuditLog(incoming());
+      allow update: if false; // Immutable: Updates strictly prohibited
+      allow delete: if false; // Immutable: Deletions strictly prohibited
+    }
+
+    // Public Contact Form Submissions
+    match /contact_messages/{messageId} {
+      allow create: if isValidId(messageId);
+      allow get, list, update, delete: if isSuperAdmin();
+    }
+  }
+}
