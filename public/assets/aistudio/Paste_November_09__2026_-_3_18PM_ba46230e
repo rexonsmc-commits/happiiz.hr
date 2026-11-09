@@ -1,0 +1,1172 @@
+# HAPPIIZ HR – PHASE 6
+# ADVANCED ATTENDANCE & DUTY ROSTER MANAGEMENT SYSTEM
+# GPS + QR CODE + SHIFT + OVERTIME + SUPERVISOR VERIFICATION
+
+Act as a senior enterprise SaaS architect, workforce management specialist, Firebase developer, backend engineer, database architect, mobile application developer and security engineer.
+
+We are continuing the existing Happiiz HR project.
+
+PHASE 1, PHASE 2, PHASE 3, PHASE 4 AND PHASE 5 HAVE ALREADY BEEN COMPLETED.
+
+Your task is to develop PHASE 6: COMPLETE ATTENDANCE AND DUTY ROSTER MANAGEMENT SYSTEM.
+
+IMPORTANT PROJECT RULES:
+
+1. Continue the existing project.
+2. Do not create a new application.
+3. Do not create a new Firebase project.
+4. Do not replace existing authentication.
+5. Do not damage existing tenant architecture.
+6. Do not rebuild completed modules.
+7. Reuse existing Employee Management, Client Management, Site Management, QR Code, Role Management and Subscription modules.
+8. Inspect the existing codebase before implementing anything.
+9. Implement real backend and database functionality, not just frontend screens.
+
+# 1. PROJECT OBJECTIVE
+
+Build a complete workforce attendance management system for:
+
+- Security Guard Companies
+- Security Agencies
+- Housekeeping Companies
+- Manpower Supply Companies
+- Facility Management Companies
+
+The system must manage employee attendance across multiple clients and multiple sites.
+
+Each employee must be associated with their authorized site assignment and duty schedule.
+
+The system must support:
+
+- GPS Attendance
+- QR Code Attendance
+- Check-in
+- Check-out
+- Duty Roster
+- Shift Management
+- Daily Attendance
+- Monthly Attendance
+- Overtime
+- Double Duty
+- Late Arrival
+- Early Leaving
+- Half Day
+- Full Day
+- Weekly Off
+- Holiday
+- Leave
+- Missing Punch
+- Attendance Correction
+- Supervisor Approval
+- Attendance Reports
+- Payroll-Ready Attendance Summary
+
+# 2. ATTENDANCE MANAGEMENT DASHBOARD
+
+Create a professional Attendance Dashboard.
+
+Dashboard statistics:
+
+- Total Assigned Employees
+- Present Today
+- Absent Today
+- Late Employees
+- On Leave
+- Weekly Off
+- Half Day
+- Pending Verification
+- Overtime Employees
+- Missing Check-out
+
+Display:
+
+- Today's Attendance
+- Site-Wise Attendance
+- Client-Wise Attendance
+- Shift-Wise Attendance
+- Employee-Wise Attendance
+- Attendance Trends
+- Pending Approvals
+- Recent Check-in Activities
+
+Filters:
+
+- Date
+- Employee
+- Employee ID
+- Client
+- Site
+- Site Code
+- Designation
+- Department
+- Shift
+- Supervisor
+- Attendance Status
+
+Use real Firestore/backend data.
+
+Do not display fabricated attendance statistics.
+
+# 3. EMPLOYEE CHECK-IN SYSTEM
+
+Create a complete employee check-in interface.
+
+Employees must be able to check in only when they have a valid active assignment and applicable duty schedule.
+
+Check-in workflow:
+
+1. Employee logs into their authorized account.
+2. System retrieves the employee's active site assignments.
+3. Employee selects the applicable site or the system identifies the scheduled site.
+4. System retrieves the assigned shift.
+5. Employee initiates check-in.
+6. GPS permission is requested when required.
+7. Employee scans the site's QR code when QR verification is enabled.
+8. Backend verifies the site, assignment, schedule and attendance policy.
+9. Attendance record is created.
+10. Employee receives a check-in confirmation.
+
+Check-in fields:
+
+- Employee ID
+- Tenant ID
+- Client ID
+- Site ID
+- Site Code
+- Shift ID
+- Attendance Date
+- Check-in Timestamp
+- GPS Latitude
+- GPS Longitude
+- GPS Accuracy
+- QR Verification Reference
+- Device Information (minimum necessary)
+- Verification Method
+- Attendance Status
+
+Verification methods:
+
+- GPS
+- QR
+- GPS + QR
+- Supervisor Verified
+- Authorized Manual Entry
+
+Important:
+
+Never trust attendance timestamps, GPS coordinates or employee IDs supplied by the frontend without backend validation.
+
+Use trusted server timestamps for attendance records.
+
+Prevent duplicate check-ins for the same shift.
+
+# 4. GPS LOCATION VERIFICATION
+
+Implement GPS-based attendance verification.
+
+Requirements:
+
+- Request location permission when an employee performs an attendance action.
+- Retrieve device location only for the attendance operation.
+- Verify the employee's current location against the registered site coordinates.
+- Use the site's configured permitted radius.
+- Default configurable radius: 100 metres.
+- Allow authorized administrators to configure the radius per site.
+- Store GPS accuracy information.
+- Calculate distance between the registered site and employee's reported location.
+- Reject or flag attendance when the location is outside the permitted radius.
+- Display a clear error message.
+- Allow supervisor exception approval according to permissions.
+
+Attendance location statuses:
+
+- Location Verified
+- Outside Geofence
+- GPS Unavailable
+- Low Accuracy
+- Location Permission Denied
+- Manual Verification Required
+
+GPS SECURITY:
+
+- Do not implement continuous background employee tracking.
+- Do not collect location when the employee is not performing an authorized attendance action.
+- Do not bypass device location permissions.
+- Do not claim GPS is tamper-proof.
+- Flag suspicious or inconsistent location data for review.
+- Provide an appropriate privacy notice.
+
+# 5. SITE QR CODE ATTENDANCE
+
+Integrate Phase 5 Site QR Code Management.
+
+Each site must have a unique QR verification identity.
+
+Workflow:
+
+1. Employee opens the Attendance page.
+2. Employee selects Scan Site QR.
+3. Camera permission is requested.
+4. Employee scans the authorized site QR.
+5. Backend verifies the QR reference.
+6. Backend checks the employee's active site assignment.
+7. Backend verifies the applicable shift.
+8. Attendance is recorded if all checks pass.
+
+Requirements:
+
+- Use the existing Phase 5 site QR identity.
+- Verify QR codes on the backend.
+- Support QR revocation and replacement.
+- Prevent unauthorized site QR usage.
+- Do not store sensitive employee data inside QR codes.
+- Avoid trusting a static QR alone as proof of presence.
+- Combine QR with GPS or supervisor verification according to site policy.
+- Support optional rotating or short-lived QR challenges where configured.
+- Maintain QR verification audit history.
+
+# 6. CHECK-OUT SYSTEM
+
+Create a complete check-out workflow.
+
+Check-out fields:
+
+- Employee ID
+- Site ID
+- Shift ID
+- Check-in Reference
+- Check-out Timestamp
+- GPS Verification
+- Working Duration
+- Break Duration
+- Net Working Duration
+- Verification Status
+
+Rules:
+
+- An employee must have a valid check-in before check-out.
+- Prevent duplicate check-outs.
+- Check-out must reference the correct attendance record.
+- Support overnight shifts.
+- Handle missing check-out through an authorized correction workflow.
+- Calculate actual working duration using trusted timestamps.
+- Apply site and shift-specific break policies.
+
+After check-out, calculate the provisional attendance duration.
+
+Do not calculate employee wages in Phase 6.
+
+# 7. DUTY ROSTER MANAGEMENT
+
+Create a complete Duty Roster module.
+
+Allow authorized Company Admin, HR and Operations Managers to schedule employees.
+
+Roster fields:
+
+- Roster ID
+- Employee ID
+- Client ID
+- Site ID
+- Designation
+- Shift ID
+- Duty Date
+- Duty Start Time
+- Duty End Time
+- Reporting Supervisor
+- Roster Status
+- Remarks
+
+Features:
+
+- Create Duty Roster
+- Edit Duty Roster
+- Copy Previous Roster
+- Assign Multiple Employees
+- Assign Employees by Site
+- Assign Employees by Designation
+- Bulk Employee Scheduling
+- Daily Roster
+- Weekly Roster
+- Monthly Roster
+- Shift-Wise Roster
+- Site-Wise Roster
+- Employee-Wise Roster
+- Export Roster
+
+Prevent conflicting schedules unless an authorized overlapping-duty policy allows them.
+
+Prevent assigning employees who are inactive, suspended, resigned or terminated.
+
+Validate active site assignments before roster creation.
+
+# 8. SHIFT MANAGEMENT
+
+Create a professional Shift Management module.
+
+Allow administrators to create custom shifts.
+
+Example shifts:
+
+- Morning Shift: 06:00 AM – 02:00 PM
+- Evening Shift: 02:00 PM – 10:00 PM
+- Night Shift: 10:00 PM – 06:00 AM
+- General Shift: 09:00 AM – 06:00 PM
+
+Shift fields:
+
+- Shift ID
+- Shift Name
+- Start Time
+- End Time
+- Break Duration
+- Grace Period
+- Late Threshold
+- Early Leaving Threshold
+- Overtime Eligibility
+- Overnight Shift Flag
+- Shift Status
+
+Support:
+
+- Multiple shifts
+- Overnight shifts
+- Flexible shifts
+- Site-specific shifts
+- Designation-specific shifts
+- Shift assignment history
+
+Store times using a consistent tenant timezone policy.
+
+Do not assume every tenant uses the same timezone.
+
+For the current India deployment, support Asia/Kolkata as the default timezone while retaining tenant-level configuration.
+
+# 9. DAILY ATTENDANCE STATUS
+
+Implement attendance status management.
+
+Supported statuses:
+
+- Present
+- Absent
+- Half Day
+- Late
+- Early Leaving
+- Weekly Off
+- Holiday
+- On Leave
+- Overtime
+- Missing Punch
+- Pending Approval
+- Rejected
+- Regularized
+
+Create configurable attendance policies.
+
+Important:
+
+Late arrival does not automatically mean absence.
+
+A person may be present and late simultaneously. Model attendance status and attendance exceptions separately where appropriate.
+
+Support multiple attendance exceptions on one attendance record.
+
+# 10. AUTOMATIC ABSENT DETECTION
+
+Create an automatic absent detection system.
+
+At the end of the applicable duty window:
+
+- Retrieve scheduled employees.
+- Check valid attendance records.
+- Identify employees without a valid check-in.
+- Exclude approved leave.
+- Exclude weekly off.
+- Exclude holidays.
+- Check roster cancellations.
+- Identify missing attendance.
+- Generate an absent candidate record.
+- Apply configured approval and finalization rules.
+
+Use scheduled backend jobs or Cloud Scheduler with secure backend functions.
+
+Do not mark employees absent before the applicable shift and grace period have ended.
+
+Prevent duplicate absent records.
+
+Allow authorized HR or Supervisor users to correct valid exceptions.
+
+# 11. LATE ARRIVAL AND EARLY LEAVING
+
+Implement automatic late and early leaving calculations.
+
+Late Arrival:
+
+Compare verified check-in time with shift start time and grace period.
+
+Early Leaving:
+
+Compare verified check-out time with shift end time and configured tolerance.
+
+Store:
+
+- Scheduled Start
+- Actual Check-in
+- Scheduled End
+- Actual Check-out
+- Late Minutes
+- Early Leaving Minutes
+- Exception Reason
+
+Support site-specific policies.
+
+Do not automatically deduct wages in Phase 6.
+
+# 12. OVERTIME MANAGEMENT
+
+Create an Overtime Management module.
+
+Track:
+
+- Scheduled Working Duration
+- Actual Working Duration
+- Approved Break Duration
+- Net Working Duration
+- Eligible Overtime Duration
+- Requested Overtime
+- Approved Overtime
+- Rejected Overtime
+
+Overtime workflow:
+
+1. Employee works beyond scheduled hours.
+2. System calculates provisional overtime.
+3. Employee or Supervisor can submit an overtime request according to company policy.
+4. Authorized Supervisor verifies.
+5. HR or authorized manager approves when required.
+6. Approved overtime becomes part of the payroll-ready attendance summary.
+
+Support:
+
+- Regular Overtime
+- Holiday Duty
+- Weekly Off Duty
+- Double Duty
+- Extra Shift
+
+IMPORTANT:
+
+Maintain a distinction between overtime duration, double-duty classification and overtime wage rate.
+
+Do not calculate monetary overtime payments in Phase 6.
+
+Those calculations belong to Phase 7 Payroll.
+
+Prevent duplicate overtime approvals.
+
+# 13. DOUBLE DUTY MANAGEMENT
+
+Create a Double Duty Management feature.
+
+Allow authorized users to record an additional shift for an employee.
+
+Fields:
+
+- Employee ID
+- Site ID
+- Primary Shift
+- Additional Shift
+- Duty Date
+- Additional Duty Duration
+- Approval Status
+- Approved By
+- Remarks
+
+Rules:
+
+- Verify that the employee is eligible for additional duty.
+- Prevent impossible overlapping shifts.
+- Check rest-period policies.
+- Require authorization.
+- Maintain separate records for primary and additional duty.
+- Prepare approved double-duty records for Phase 7 Payroll.
+
+Do not automatically multiply wages in Phase 6.
+
+# 14. WEEKLY OFF AND HOLIDAY MANAGEMENT
+
+Create:
+
+A. Weekly Off Management
+
+- Employee-wise weekly off
+- Site-wise weekly off
+- Shift-wise weekly off
+- Rotational weekly off
+- Weekly off changes
+- Weekly off history
+
+B. Holiday Management
+
+- Create Holiday
+- Holiday Name
+- Holiday Date
+- Holiday Type
+- Applicable Sites
+- Applicable Departments
+- Holiday Status
+
+Support:
+
+- National Holidays
+- State Holidays
+- Company Holidays
+- Site-Specific Holidays
+
+A holiday must not automatically generate an employee attendance record unless the applicable attendance policy requires it.
+
+# 15. LEAVE MANAGEMENT INTEGRATION
+
+Prepare attendance integration with employee leave records.
+
+Support attendance recognition for:
+
+- Approved Leave
+- Pending Leave
+- Rejected Leave
+- Half-Day Leave
+
+If an existing Leave Management module exists, reuse it.
+
+Do not create duplicate leave records or duplicate leave approval workflows.
+
+If the Leave Management module has not yet been implemented, create only the necessary integration interface and clearly identify the dependency.
+
+# 16. MISSING PUNCH MANAGEMENT
+
+Create a Missing Punch Management system.
+
+Cases:
+
+- Missing Check-in
+- Missing Check-out
+- GPS Failure
+- QR Scan Failure
+- Device Offline
+- Incorrect Shift
+- Duplicate Punch
+
+Features:
+
+- Employee Correction Request
+- Supervisor Verification
+- HR Approval
+- Reason and Remarks
+- Supporting Evidence
+- Previous Value
+- Corrected Value
+- Correction History
+
+Never silently overwrite original attendance events.
+
+Store correction records separately with an immutable audit trail.
+
+# 17. SUPERVISOR ATTENDANCE MANAGEMENT
+
+Create a dedicated Site Supervisor Dashboard.
+
+Supervisor can:
+
+- View Assigned Sites
+- View Scheduled Employees
+- View Present Employees
+- View Absent Employees
+- View Late Employees
+- View Missing Punches
+- View Pending Approvals
+- Verify Employee Attendance
+- Approve Authorized Corrections
+- Approve Overtime Requests
+- Report Absent Employees
+- View Site-Wise Attendance
+
+A Supervisor must only access authorized assigned sites.
+
+Use existing Phase 3 Role and Permission Management.
+
+Do not automatically give every employee supervisor access.
+
+# 18. MANUAL ATTENDANCE MANAGEMENT
+
+Allow authorized HR/Admin users to enter manual attendance.
+
+Fields:
+
+- Employee
+- Client
+- Site
+- Attendance Date
+- Shift
+- Check-in Time
+- Check-out Time
+- Attendance Status
+- Manual Entry Reason
+- Supporting Document
+- Approved By
+
+Requirements:
+
+- Permission-based manual entry.
+- Mandatory reason.
+- Audit trail.
+- Approval workflow.
+- Preserve original records.
+- Prevent unauthorized backdated changes.
+
+Manual attendance must be distinguishable from GPS/QR verified attendance.
+
+# 19. ATTENDANCE CALENDAR AND REPORTS
+
+Create an Employee Attendance Calendar.
+
+Display:
+
+- Daily Attendance
+- Weekly Attendance
+- Monthly Attendance
+- Present Days
+- Absent Days
+- Half Days
+- Leave Days
+- Weekly Off
+- Holiday
+- Late Arrival
+- Overtime Hours
+- Double Duty
+
+Create reports:
+
+- Daily Attendance Report
+- Monthly Attendance Report
+- Employee-Wise Attendance
+- Site-Wise Attendance
+- Client-Wise Attendance
+- Shift-Wise Attendance
+- Supervisor-Wise Attendance
+- Overtime Report
+- Late Arrival Report
+- Missing Punch Report
+- Absentee Report
+- Double Duty Report
+
+Export:
+
+- PDF
+- CSV
+- Print
+
+Use pagination and efficient Firestore queries.
+
+# 20. ATTENDANCE FINALIZATION
+
+Create an Attendance Period Management system.
+
+Allow authorized HR users to:
+
+- Review Daily Attendance
+- Review Monthly Attendance
+- Resolve Pending Exceptions
+- Verify Overtime
+- Approve Corrections
+- Finalize Attendance Period
+
+Period statuses:
+
+- Open
+- Under Review
+- Pending Approval
+- Finalized
+- Reopened
+
+Once finalized:
+
+- Restrict ordinary modifications.
+- Require special permission for reopening.
+- Record who finalized the period.
+- Maintain revision history.
+- Preserve the original approved attendance snapshot.
+
+This is essential for reliable Phase 7 Payroll integration.
+
+# 21. PHASE 7 PAYROLL INTEGRATION
+
+Prepare a reliable payroll-ready attendance summary.
+
+For every employee and payroll period, provide:
+
+- Employee ID
+- Tenant ID
+- Payroll Period
+- Assigned Site
+- Total Scheduled Shifts
+- Present Days
+- Absent Days
+- Half Days
+- Approved Leave Days
+- Weekly Off Days
+- Holiday Duty Days
+- Regular Working Hours
+- Approved Overtime Hours
+- Approved Double Duty Count
+- Late Minutes
+- Early Leaving Minutes
+- Attendance Finalization Status
+
+IMPORTANT:
+
+Phase 6 must provide verified attendance data.
+
+Do not implement:
+
+- Basic Salary Calculation
+- Daily Wage Calculation
+- Overtime Monetary Calculation
+- Double Wage Calculation
+- Advance Deduction
+- Uniform Deduction
+- Debit Deduction
+- Salary Slip Generation
+
+These belong to Phase 7 Payroll.
+
+Keep attendance facts separate from financial calculations.
+
+# 22. ANDROID AND MOBILE APP READINESS
+
+The existing Happiiz HR system must support mobile-friendly attendance interfaces.
+
+Prepare responsive PWA-compatible screens.
+
+Features:
+
+- Employee Login
+- My Attendance
+- Check-in
+- Check-out
+- QR Scanner
+- GPS Permission
+- My Duty Roster
+- My Shift
+- Attendance History
+- Overtime Request
+- Missing Punch Request
+- Supervisor Dashboard
+
+If offline attendance is required:
+
+- Store pending attendance events securely on the device.
+- Sync when connectivity returns.
+- Preserve the original device event time.
+- Record the server receipt time separately.
+- Use unique event IDs.
+- Prevent duplicate synchronization.
+- Flag offline events for additional verification.
+- Do not mark unverified offline records as fully verified.
+
+Prepare the same backend APIs for the planned three Android applications.
+
+Do not create duplicate attendance databases for different applications.
+
+# 23. FIRESTORE DATABASE ARCHITECTURE
+
+Continue the existing tenant-based database architecture.
+
+Suggested collections:
+
+tenants/{tenantId}/shifts/{shiftId}
+
+tenants/{tenantId}/rosters/{rosterId}
+
+tenants/{tenantId}/attendance/{attendanceId}
+
+tenants/{tenantId}/attendanceEvents/{eventId}
+
+tenants/{tenantId}/overtimeRequests/{requestId}
+
+tenants/{tenantId}/doubleDutyRecords/{recordId}
+
+tenants/{tenantId}/weeklyOffPolicies/{policyId}
+
+tenants/{tenantId}/holidays/{holidayId}
+
+tenants/{tenantId}/attendanceCorrections/{correctionId}
+
+tenants/{tenantId}/attendancePeriods/{periodId}
+
+tenants/{tenantId}/attendanceSummaries/{summaryId}
+
+tenants/{tenantId}/attendanceApprovals/{approvalId}
+
+Use fields:
+
+- tenantId
+- employeeId
+- clientId
+- siteId
+- shiftId
+- rosterId
+- attendanceDate
+- checkInAt
+- checkOutAt
+- verificationMethod
+- verificationStatus
+- attendanceStatus
+- approvalStatus
+- createdAt
+- updatedAt
+- createdBy
+
+Use stable references to Phase 4 employees and Phase 5 sites.
+
+Do not duplicate employee or site master records unnecessarily.
+
+Use server timestamps.
+
+Use secure Firestore indexes.
+
+Avoid unbounded reads.
+
+Use cursor-based pagination.
+
+Preserve historical attendance events.
+
+Do not store sensitive authentication information in attendance records.
+
+# 24. BACKEND API ARCHITECTURE
+
+Adapt these proposed routes to the existing backend conventions.
+
+ATTENDANCE:
+
+POST /api/attendance/check-in
+
+POST /api/attendance/check-out
+
+GET /api/attendance
+
+GET /api/attendance/employee/:employeeId
+
+GET /api/attendance/site/:siteId
+
+POST /api/attendance/manual
+
+POST /api/attendance/:attendanceId/regularize
+
+ROSTER:
+
+POST /api/rosters
+
+GET /api/rosters
+
+PUT /api/rosters/:rosterId
+
+SHIFT:
+
+POST /api/shifts
+
+GET /api/shifts
+
+PUT /api/shifts/:shiftId
+
+OVERTIME:
+
+POST /api/overtime/request
+
+GET /api/overtime
+
+POST /api/overtime/:requestId/approve
+
+DOUBLE DUTY:
+
+POST /api/double-duty
+
+GET /api/double-duty
+
+APPROVAL:
+
+POST /api/attendance/:attendanceId/approve
+
+REPORTS:
+
+GET /api/attendance/reports/daily
+
+GET /api/attendance/reports/monthly
+
+All endpoints must:
+
+- Verify Firebase authentication.
+- Verify tenant membership.
+- Verify user permissions.
+- Validate employee assignment.
+- Validate site ownership.
+- Verify shift eligibility.
+- Validate request data.
+- Prevent duplicate operations.
+- Return consistent API responses.
+- Maintain audit logs.
+
+Never trust frontend tenant IDs, timestamps or GPS verification claims.
+
+# 25. ROLE AND PERMISSION CONTROL
+
+Integrate the existing Phase 3 Permission System.
+
+Suggested permissions:
+
+ATTENDANCE:
+
+- attendance.view
+- attendance.view.own
+- attendance.view.site
+- attendance.checkin
+- attendance.checkout
+- attendance.manual.create
+- attendance.correct
+- attendance.approve
+- attendance.finalize
+- attendance.reopen
+- attendance.export
+
+ROSTER:
+
+- roster.view
+- roster.create
+- roster.edit
+- roster.delete
+
+SHIFT:
+
+- shift.view
+- shift.create
+- shift.edit
+
+OVERTIME:
+
+- overtime.view
+- overtime.request
+- overtime.approve
+
+DOUBLE DUTY:
+
+- doubleduty.view
+- doubleduty.create
+- doubleduty.approve
+
+SUPERVISOR:
+
+- supervisor.attendance.verify
+- supervisor.attendance.approve
+- supervisor.site.view
+
+Apply access restrictions:
+
+- Employee: Own attendance and roster.
+- Site Supervisor: Assigned sites only.
+- HR Manager: Authorized employee and attendance records.
+- Operations Manager: Authorized sites and operations.
+- Company Admin: Tenant-level management according to permissions.
+- Super Admin: Platform-level administrative access under controlled policies.
+
+Enforce authorization on the backend.
+
+Do not rely only on frontend button visibility.
+
+# 26. USER INTERFACE DESIGN
+
+Maintain the existing Happiiz HR design system.
+
+Create the following screens:
+
+1. Attendance Dashboard
+2. Daily Attendance
+3. Employee Attendance
+4. Site Attendance
+5. GPS Attendance
+6. QR Scanner
+7. Check-in Confirmation
+8. Check-out Confirmation
+9. Duty Roster Calendar
+10. Shift Management
+11. Weekly Off Management
+12. Holiday Management
+13. Overtime Management
+14. Double Duty Management
+15. Missing Punch Requests
+16. Attendance Corrections
+17. Supervisor Dashboard
+18. Monthly Attendance Summary
+19. Attendance Reports
+20. Attendance Finalization
+
+Design:
+
+- Professional blue and white theme.
+- Responsive desktop and mobile layout.
+- Fast-loading interfaces.
+- Clear attendance status indicators.
+- Easy-to-use QR scanner.
+- Interactive calendars.
+- Site-wise tables.
+- Employee search.
+- Advanced filters.
+- Confirmation dialogs.
+- Error and success messages.
+
+Every visible button must perform an actual action.
+
+# 27. SECURITY AND DATA PROTECTION
+
+Implement:
+
+- Firebase Authentication
+- Tenant Isolation
+- Role-Based Access
+- Backend Validation
+- GPS Permission Handling
+- Secure QR Verification
+- Attendance Event Audit Logs
+- Duplicate Punch Prevention
+- Secure Offline Synchronization
+- Restricted Attendance Corrections
+- Finalized Period Protection
+
+Do not permit an employee to:
+
+- Change another employee's attendance.
+- Submit attendance for another employee.
+- Change site coordinates.
+- Change approved attendance.
+- Modify server timestamps.
+- Approve their own restricted correction requests.
+
+Prevent unauthorized replay of QR verification requests where challenge-based verification is enabled.
+
+# 28. TESTING REQUIREMENTS
+
+Test all important features.
+
+1. Employee Check-in
+2. Employee Check-out
+3. GPS Verification
+4. Outside Geofence Handling
+5. QR Code Verification
+6. Invalid QR Rejection
+7. Duplicate Check-in Prevention
+8. Overnight Shifts
+9. Duty Roster Creation
+10. Shift Management
+11. Automatic Absent Detection
+12. Late Arrival
+13. Early Leaving
+14. Overtime Requests
+15. Double Duty Approval
+16. Weekly Off
+17. Holiday Management
+18. Missing Punch
+19. Manual Attendance
+20. Supervisor Approval
+21. Monthly Attendance Reports
+22. Attendance Finalization
+23. Payroll Summary Export
+24. Offline Synchronization
+25. Tenant Isolation
+26. Permission Restrictions
+27. Mobile Responsive Testing
+
+Use at least two test tenants and multiple test employees.
+
+Do not claim tests have passed unless they have actually been executed.
+
+# 29. DEVELOPMENT RULES
+
+- Preserve Phase 1 to Phase 5.
+- Reuse the existing Firebase project.
+- Reuse Phase 4 employee records.
+- Reuse Phase 5 site records and QR identity.
+- Reuse existing authentication.
+- Reuse existing permissions.
+- Do not create duplicate employee records.
+- Do not create duplicate sites.
+- Do not fabricate attendance records.
+- Do not expose employee location unnecessarily.
+- Do not implement payroll calculations.
+- Do not silently overwrite attendance events.
+- Do not hardcode tenant IDs.
+- Use real database operations.
+- Keep the architecture modular and scalable.
+
+# 30. PHASE 6 FINAL DELIVERABLES
+
+At completion, provide:
+
+1. Complete Attendance Dashboard.
+2. GPS Attendance System.
+3. QR-Based Site Attendance.
+4. Employee Check-in and Check-out.
+5. Duty Roster Management.
+6. Shift Management.
+7. Automatic Absent Detection.
+8. Late Arrival and Early Leaving.
+9. Overtime Management.
+10. Double Duty Management.
+11. Weekly Off Management.
+12. Holiday Management.
+13. Leave Integration.
+14. Missing Punch Management.
+15. Supervisor Attendance Portal.
+16. Manual Attendance Correction.
+17. Monthly Attendance Calendar.
+18. Attendance Reports.
+19. Attendance Period Finalization.
+20. Payroll-Ready Attendance Summary.
+21. Mobile/PWA Attendance Interface.
+22. Firebase Integration.
+23. Backend API Integration.
+24. Firestore Security Rules.
+25. Testing Report.
+26. Deployment Documentation.
+
+# 31. FINAL EXECUTION INSTRUCTION
+
+First inspect the existing Happiiz HR codebase.
+
+Understand how Phase 1, Phase 2, Phase 3, Phase 4 and Phase 5 have been implemented.
+
+Then build Phase 6 module by module.
+
+Do not rebuild completed functionality.
+
+Do not stop after generating frontend screens.
+
+Implement actual database persistence, secure APIs, attendance validation, GPS verification, QR verification and reporting.
+
+Test all important workflows.
+
+If any existing module or configuration is missing, identify the dependency and explain how to resolve it.
+
+At completion, provide:
+
+- Completed Features
+- Pending Features
+- Backend Changes
+- Firestore Changes
+- Security Changes
+- API Changes
+- Testing Results
+- Known Issues
+- Deployment Instructions
+
+FINAL GOAL:
+
+Build a professional, secure, scalable and fully functional GPS + QR + Duty Roster + Attendance Management System for Happiiz HR, integrated with the existing Employee and Site Management modules and ready for Phase 7 Payroll.

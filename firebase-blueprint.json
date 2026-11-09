@@ -396,6 +396,22 @@
       "schema": { "$ref": "#/entities/CompanyBranch" },
       "description": "Tenant-scoped regional branch hubs"
     },
+    "/companies/{companyId}/shifts/{shiftId}": {
+      "schema": { "$ref": "#/entities/ShiftDefinition" },
+      "description": "Tenant-scoped work shifts and duty timing policies"
+    },
+    "/companies/{companyId}/rosters/{rosterId}": {
+      "schema": { "$ref": "#/entities/DutyRoster" },
+      "description": "Tenant-scoped employee duty rosters and scheduled shifts"
+    },
+    "/companies/{companyId}/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "Verified employee attendance punches with GPS and QR validation"
+    },
+    "/companies/{companyId}/overtimeRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/OvertimeRequest" },
+      "description": "Overtime and double duty authorization requests"
+    },
     "/platform_plans/{planId}": {
       "schema": { "$ref": "#/entities/SubscriptionPlanItem" },
       "description": "Dynamic pricing plans managed by Super Admin"

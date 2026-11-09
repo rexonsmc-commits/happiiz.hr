@@ -300,6 +300,78 @@ service cloud.firestore {
         allow create, update: if isCompanyAdmin(companyId) && isValidId(settingId);
         allow delete: if isCompanyAdmin(companyId);
       }
+
+      // Phase 6 Subcollection: Shift Definitions
+      match /shifts/{shiftId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(shiftId);
+      }
+
+      // Phase 6 Subcollection: Duty Rosters
+      match /rosters/{rosterId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(rosterId);
+      }
+
+      // Phase 6 Subcollection: Attendance Records
+      match /attendance/{attendanceId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isSignedIn() && isValidId(attendanceId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 6 Subcollection: Attendance Events (Audit Trail)
+      match /attendanceEvents/{eventId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isSignedIn() && isValidId(eventId);
+        allow update, delete: if false; // Immutable audit trail
+      }
+
+      // Phase 6 Subcollection: Overtime Requests
+      match /overtimeRequests/{requestId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isSignedIn() && isValidId(requestId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 6 Subcollection: Double Duty Records
+      match /doubleDutyRecords/{recordId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(recordId);
+      }
+
+      // Phase 6 Subcollection: Weekly Off Policies
+      match /weeklyOffPolicies/{policyId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(policyId);
+      }
+
+      // Phase 6 Subcollection: Holidays Calendar
+      match /holidays/{holidayId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(holidayId);
+      }
+
+      // Phase 6 Subcollection: Missing Punch Corrections
+      match /attendanceCorrections/{correctionId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isSignedIn() && isValidId(correctionId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 6 Subcollection: Attendance Period Finalization
+      match /attendancePeriods/{periodId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(periodId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 6 Subcollection: Payroll Summaries
+      match /attendanceSummaries/{summaryId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(summaryId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
     }
 
     // Top-Level Tenant Mirror Path

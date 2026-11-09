@@ -92,9 +92,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'ca_audit', label: 'Activity Logs', icon: FileText },
     // Phase 4: Live Employee HRMS Module
     { id: 'ca_employees', label: 'Employees (HRMS)', icon: UserCheck, badge: 'Phase 4' },
+    // Phase 6: Advanced Attendance & Duty Rosters
+    { id: 'ca_attendance', label: 'Attendance (GPS/QR)', icon: Clock, badge: 'Phase 6' },
+    { id: 'ca_roster', label: 'Shifts & Roster', icon: CalendarDays, badge: 'Live' },
     // Future HRMS roadmap modules
-    { id: 'ca_attendance', label: 'Attendance', icon: Clock, pill: 'Roadmap', comingSoon: true },
-    { id: 'ca_roster', label: 'Shifts & Roster', icon: CalendarDays, pill: 'Roadmap', comingSoon: true },
     { id: 'ca_payroll', label: 'Payroll', icon: Banknote, pill: 'Roadmap', comingSoon: true },
     { id: 'ca_invoices', label: 'Invoices', icon: Receipt, pill: 'Roadmap', comingSoon: true },
     { id: 'ca_accounts', label: 'Accounts', icon: BarChart3, pill: 'Roadmap', comingSoon: true },

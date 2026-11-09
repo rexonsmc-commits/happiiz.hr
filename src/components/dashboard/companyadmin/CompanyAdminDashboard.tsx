@@ -34,6 +34,7 @@ import { ActivityLogsModule } from '../../company/ActivityLogsModule';
 import { SubscriptionModule } from '../../company/SubscriptionModule';
 import { EmployeeManagementModule } from '../../employee/EmployeeManagementModule';
 import { ClientManagementModule } from '../../clients/ClientManagementModule';
+import { AttendanceManagementModule } from '../../attendance/AttendanceManagementModule';
 import {
   Users,
   MapPin,
@@ -179,10 +180,13 @@ export const CompanyAdminDashboard: React.FC<CompanyAdminDashboardProps> = ({
     return <ClientManagementModule />;
   }
 
+  // Phase 6: Advanced Attendance & Duty Rosters
+  if (activeTab === 'ca_attendance' || activeTab === 'ca_roster') {
+    return <AttendanceManagementModule />;
+  }
+
   // Roadmap modules placeholder
   const comingSoonTitles: Record<string, string> = {
-    ca_attendance: 'Attendance (GPS Geofencing & Biometric Muster)',
-    ca_roster: 'Automated Shift Rostering & Post Fulfillment',
     ca_payroll: 'Automated Payroll, Wages, PF & ESIC',
     ca_invoices: 'GST Client Invoicing & Billing',
     ca_accounts: 'Accounts Ledger & Operational Expenses',

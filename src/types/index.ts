@@ -1061,3 +1061,312 @@ export interface CompanyFullSettings {
   updatedAt?: string;
 }
 
+// ==========================================
+// Phase 6: Attendance & Duty Roster Models
+// ==========================================
+
+export type AttendanceStatus =
+  | 'present'
+  | 'absent'
+  | 'half_day'
+  | 'late'
+  | 'early_leaving'
+  | 'weekly_off'
+  | 'holiday'
+  | 'on_leave'
+  | 'overtime'
+  | 'missing_punch'
+  | 'pending_approval'
+  | 'rejected'
+  | 'regularized';
+
+export type AttendanceLocationStatus =
+  | 'verified'
+  | 'outside_geofence'
+  | 'gps_unavailable'
+  | 'low_accuracy'
+  | 'permission_denied'
+  | 'manual_required';
+
+export type VerificationMethod =
+  | 'GPS'
+  | 'QR'
+  | 'GPS_QR'
+  | 'SUPERVISOR'
+  | 'MANUAL';
+
+export interface ShiftDefinition {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  shiftName: string;
+  shiftCode: string; // e.g. SH-MRN, SH-EVN, SH-NGT, SH-GEN
+  startTime: string; // e.g. "06:00"
+  endTime: string; // e.g. "14:00"
+  breakDurationMinutes: number; // e.g. 60
+  gracePeriodMinutes: number; // e.g. 15
+  lateThresholdMinutes: number; // e.g. 30
+  earlyLeavingThresholdMinutes: number; // e.g. 15
+  overtimeEligible: boolean;
+  isOvernight: boolean; // Flag for shifts crossing midnight (e.g. 22:00 to 06:00)
+  status: 'active' | 'inactive';
+  siteSpecificSiteId?: string;
+  designation?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface DutyRoster {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  clientId: string;
+  clientName: string;
+  siteId: string;
+  siteCode: string;
+  siteName: string;
+  designation: string;
+  shiftId: string;
+  shiftName: string;
+  dutyDate: string; // YYYY-MM-DD
+  dutyStartTime: string;
+  dutyEndTime: string;
+  reportingSupervisorId?: string;
+  reportingSupervisorName?: string;
+  status: 'scheduled' | 'completed' | 'absent' | 'cancelled' | 'swapped';
+  remarks?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  clientId: string;
+  clientName: string;
+  siteId: string;
+  siteCode: string;
+  siteName: string;
+  shiftId: string;
+  shiftName: string;
+  rosterId?: string;
+  attendanceDate: string; // YYYY-MM-DD
+  checkInAt?: string; // ISO 8601
+  checkOutAt?: string; // ISO 8601
+  checkInGps?: {
+    lat: number;
+    lng: number;
+    accuracy: number;
+    distanceMeters: number;
+    withinGeofence: boolean;
+  };
+  checkOutGps?: {
+    lat: number;
+    lng: number;
+    accuracy: number;
+    distanceMeters: number;
+    withinGeofence: boolean;
+  };
+  checkInVerificationMethod: VerificationMethod;
+  checkOutVerificationMethod?: VerificationMethod;
+  checkInQrToken?: string;
+  attendanceStatus: AttendanceStatus;
+  locationStatus: AttendanceLocationStatus;
+  lateMinutes: number;
+  earlyLeavingMinutes: number;
+  scheduledDurationHours: number;
+  actualDurationHours: number;
+  breakDurationMinutes: number;
+  netDurationHours: number;
+  overtimeHours: number;
+  isOvertime: boolean;
+  isDoubleDuty: boolean;
+  approvalStatus: 'pending' | 'approved' | 'rejected' | 'auto_approved';
+  verifiedBy?: string;
+  verifiedByName?: string;
+  verifiedAt?: string;
+  remarks?: string;
+  exceptions?: string[]; // e.g. ["late_arrival", "outside_geofence"]
+  isManual?: boolean;
+  manualReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AttendanceEvent {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  attendanceId: string;
+  employeeId: string;
+  eventType: 'check_in' | 'check_out' | 'geofence_breach' | 'qr_scanned' | 'correction_requested' | 'supervisor_verified';
+  timestamp: string;
+  gps?: {
+    lat: number;
+    lng: number;
+    accuracy: number;
+  };
+  deviceInfo?: string;
+  recordedBy: string;
+}
+
+export interface OvertimeRequest {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  siteId: string;
+  siteName: string;
+  dutyDate: string;
+  shiftId: string;
+  shiftName: string;
+  scheduledHours: number;
+  actualHours: number;
+  requestedOtHours: number;
+  approvedOtHours: number;
+  otType: 'regular_ot' | 'holiday_duty' | 'weekly_off_duty' | 'double_duty' | 'extra_shift';
+  status: 'pending' | 'verified_by_supervisor' | 'approved_by_hr' | 'rejected';
+  reason: string;
+  supervisorRemarks?: string;
+  verifiedBySupervisorId?: string;
+  approvedByHrId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface DoubleDutyRecord {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  siteId: string;
+  siteName: string;
+  dutyDate: string;
+  primaryShiftId: string;
+  primaryShiftName: string;
+  additionalShiftId: string;
+  additionalShiftName: string;
+  additionalDutyDurationHours: number;
+  status: 'pending' | 'approved' | 'rejected';
+  approvedBy?: string;
+  approvedByName?: string;
+  remarks?: string;
+  createdAt: string;
+}
+
+export interface WeeklyOffPolicy {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  policyName: string;
+  policyType: 'employee_specific' | 'site_specific' | 'shift_specific' | 'rotational';
+  daysOfWeek: number[]; // 0 for Sunday, 6 for Saturday
+  applicableSiteIds?: string[];
+  applicableShiftIds?: string[];
+  status: 'active' | 'inactive';
+  createdAt: string;
+}
+
+export interface CompanyHoliday {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  holidayName: string;
+  holidayDate: string; // YYYY-MM-DD
+  holidayType: 'national' | 'state' | 'company' | 'site_specific';
+  applicableSiteIds?: string[];
+  applicableDepartmentIds?: string[];
+  isMandatory: boolean;
+  status: 'active' | 'cancelled';
+  description?: string;
+  createdAt: string;
+}
+
+export interface MissingPunchCorrection {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  siteId: string;
+  siteName: string;
+  attendanceDate: string;
+  correctionType: 'missing_check_in' | 'missing_check_out' | 'both_punches' | 'incorrect_shift' | 'gps_failure' | 'qr_failure';
+  previousCheckIn?: string;
+  previousCheckOut?: string;
+  requestedCheckIn: string;
+  requestedCheckOut: string;
+  reason: string;
+  supportingDocUrl?: string;
+  supervisorStatus: 'pending' | 'verified' | 'rejected';
+  hrStatus: 'pending' | 'approved' | 'rejected';
+  supervisorRemarks?: string;
+  hrRemarks?: string;
+  verifiedBySupervisor?: string;
+  approvedByHr?: string;
+  resolvedAt?: string;
+  createdAt: string;
+}
+
+export interface AttendancePeriodFinalization {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  period: string; // YYYY-MM
+  startDate: string;
+  endDate: string;
+  status: 'open' | 'under_review' | 'finalized' | 'reopened';
+  totalScheduledDays: number;
+  totalPresentDays: number;
+  totalAbsentDays: number;
+  totalOvertimeHours: number;
+  totalDoubleDutyCount: number;
+  finalizedBy?: string;
+  finalizedByName?: string;
+  finalizedAt?: string;
+  reopenedBy?: string;
+  reopenedAt?: string;
+  remarks?: string;
+  createdAt: string;
+}
+
+export interface PayrollReadyAttendanceSummary {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  designation: string;
+  period: string; // e.g. "2026-11"
+  assignedSiteId: string;
+  assignedSiteName: string;
+  totalScheduledShifts: number;
+  presentDays: number;
+  absentDays: number;
+  halfDays: number;
+  approvedLeaveDays: number;
+  weeklyOffDays: number;
+  holidayDutyDays: number;
+  regularWorkingHours: number;
+  approvedOvertimeHours: number;
+  approvedDoubleDutyCount: number;
+  lateMinutes: number;
+  earlyLeavingMinutes: number;
+  finalizationStatus: 'open' | 'finalized';
+  generatedAt: string;
+}
+
+
