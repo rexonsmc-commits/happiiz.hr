@@ -35,6 +35,9 @@ import { SubscriptionModule } from '../../company/SubscriptionModule';
 import { EmployeeManagementModule } from '../../employee/EmployeeManagementModule';
 import { ClientManagementModule } from '../../clients/ClientManagementModule';
 import { AttendanceManagementModule } from '../../attendance/AttendanceManagementModule';
+import { PayrollManagementModule } from '../../payroll/PayrollManagementModule';
+import { ClientBillingCoordinator } from '../../billing/ClientBillingCoordinator';
+import { AccountingCoordinator } from '../../accounting/AccountingCoordinator';
 import {
   Users,
   MapPin,
@@ -185,11 +188,45 @@ export const CompanyAdminDashboard: React.FC<CompanyAdminDashboardProps> = ({
     return <AttendanceManagementModule />;
   }
 
+  // Phase 7: Complete Payroll & Salary Management
+  if (activeTab === 'ca_payroll') {
+    return (
+      <PayrollManagementModule
+        companyId={currentCompany.id}
+        tenantId={currentCompany.tenantId}
+        currentCompany={currentCompany}
+        employees={employees}
+        currentUser={{ name: currentUser?.displayName || 'Company Admin', role: currentUser?.role }}
+      />
+    );
+  }
+
+  // Phase 8: Complete Client Billing, GST Invoices & Payment Management
+  if (activeTab === 'ca_invoices') {
+    return (
+      <ClientBillingCoordinator
+        companyId={currentCompany.id}
+        tenantId={currentCompany.tenantId}
+        currentCompany={currentCompany}
+        currentUser={{ name: currentUser?.displayName || 'Company Admin', role: currentUser?.role }}
+      />
+    );
+  }
+
+  // Phase 9: Complete Accounting & Financial Management System
+  if (activeTab === 'ca_accounts') {
+    return (
+      <AccountingCoordinator
+        companyId={currentCompany.id}
+        tenantId={currentCompany.tenantId}
+        currentCompany={currentCompany}
+        currentUser={{ name: currentUser?.displayName || 'Company Admin', role: currentUser?.role }}
+      />
+    );
+  }
+
   // Roadmap modules placeholder
   const comingSoonTitles: Record<string, string> = {
-    ca_payroll: 'Automated Payroll, Wages, PF & ESIC',
-    ca_invoices: 'GST Client Invoicing & Billing',
-    ca_accounts: 'Accounts Ledger & Operational Expenses',
     ca_reports: 'Statutory Muster & Inspection Reports',
     ca_documents: 'Digital KYC Verification & Document Vault',
   };
@@ -250,434 +287,377 @@ export const CompanyAdminDashboard: React.FC<CompanyAdminDashboardProps> = ({
   const totalSites = sites.length;
 
   return (
-    <div className="space-y-6">
-      {/* 1. WELCOME & CONTEXT HEADER */}
-      <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
-        {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
+    <div className="space-y-4">
+      {/* 1. SLIM EXECUTIVE COMMAND BAR */}
+      <div className="bg-slate-900 rounded-xl px-4 py-3 text-white border border-slate-800 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          {/* Company Identity */}
+          <div className="flex items-center gap-3 min-w-0">
             {currentCompany.logoUrl ? (
               <img
                 src={currentCompany.logoUrl}
                 alt={currentCompany.name}
-                className="w-14 h-14 rounded-2xl object-cover bg-white p-1 border border-blue-400/30 shrink-0 shadow-lg"
+                className="w-10 h-10 rounded-lg object-cover bg-white p-0.5 border border-slate-700 shrink-0"
               />
             ) : (
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-blue-600/40 shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-blue-600 text-white font-black text-sm flex items-center justify-center shrink-0">
                 {currentCompany.name.substring(0, 2).toUpperCase()}
               </div>
             )}
 
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                <span className="font-mono text-[10px] text-sky-300 bg-sky-950/90 border border-sky-800 px-2.5 py-0.5 rounded-full font-bold">
-                  ID: {currentCompany.tenantId}
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
+                  {currentCompany.displayName || currentCompany.name}
+                </h1>
+                <span className="font-mono text-[10px] text-sky-300 bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded">
+                  {currentCompany.tenantId}
                 </span>
-                <span className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-blue-900/60 text-blue-200 border border-blue-700/50">
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">
                   {currentCompany.companyType || currentCompany.industry}
                 </span>
-                <span className="text-[10px] uppercase font-black px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/50 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{currentCompany.subscriptionStatus}</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800/50">
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">
                   {currentCompany.subscriptionPlan} Tier
                 </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {currentCompany.displayName || currentCompany.name}
-              </h1>
-
-              <p className="text-xs text-slate-300 mt-1">
-                Primary Administrator:{' '}
-                <span className="text-white font-semibold">
-                  {currentCompany.adminName || currentCompany.ownerName}
-                </span>{' '}
-                • Reg Date:{' '}
-                <span className="font-mono text-sky-300">
-                  {currentCompany.registrationDate || currentCompany.createdAt?.substring(0, 10) || '2026-01-15'}
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  {currentCompany.subscriptionStatus}
                 </span>
+              </div>
+              <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                Primary Admin: <span className="text-slate-200 font-medium">{currentCompany.adminName || currentCompany.ownerName}</span>
+                {' '}• Est: <span className="font-mono text-slate-300">{currentCompany.registrationDate || currentCompany.createdAt?.substring(0, 10) || '2026-01-15'}</span>
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={() => onSelectTab('ca_profile')}
-              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/30 flex items-center gap-1.5 transition-all cursor-pointer"
-            >
-              <Building2 className="w-4 h-4" />
-              <span>Company Profile</span>
-            </button>
-            <button
-              onClick={() => onSelectTab('ca_settings')}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
-            >
-              <span>Settings</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 2. DASHBOARD CAPACITY & HEADCOUNT METER */}
-        <div className="mt-6 pt-6 border-t border-slate-800/80 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-          <div className="lg:col-span-2 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-300 font-semibold flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-sky-400" />
-                <span>Workforce Capacity Usage</span>
-              </span>
-              <span className="font-mono text-sky-300 font-bold">
-                {employeeCount} / {maxEmployees} Employees ({capacityPercent}%)
-              </span>
+          {/* Right Action & Workforce Capacity Gauge */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Slim Capacity Indicator */}
+            <div className="hidden sm:flex flex-col items-end text-right">
+              <div className="flex items-center gap-2 text-[11px]">
+                <span className="text-slate-400 font-medium">License Slots:</span>
+                <span className="font-mono font-bold text-sky-300">{employeeCount}/{maxEmployees} ({capacityPercent}%)</span>
+              </div>
+              <div className="w-32 bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1 border border-slate-700">
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${
+                    capacityPercent > 90
+                      ? 'bg-rose-500'
+                      : capacityPercent > 75
+                      ? 'bg-amber-400'
+                      : 'bg-gradient-to-r from-blue-500 to-sky-400'
+                  }`}
+                  style={{ width: `${capacityPercent}%` }}
+                />
+              </div>
             </div>
 
-            <div className="w-full bg-slate-900/80 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  capacityPercent > 90
-                    ? 'bg-rose-500'
-                    : capacityPercent > 75
-                    ? 'bg-amber-400'
-                    : 'bg-gradient-to-r from-blue-500 to-sky-400'
-                }`}
-                style={{ width: `${capacityPercent}%` }}
-              />
-            </div>
-
-            <div className="flex justify-between text-[11px] text-slate-400">
-              <span>{remainingCapacity} employee license slots remaining</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => onSelectTab('ca_profile')}
+                className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Profile</span>
+              </button>
               <button
                 onClick={() => onSelectTab('ca_subscription')}
-                className="text-sky-400 hover:underline font-bold"
+                className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1 transition-colors cursor-pointer"
               >
-                Upgrade Plan →
+                <CreditCard className="w-3.5 h-3.5 text-sky-400" />
+                <span>Plan</span>
               </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 text-center">
-              <span className="text-[10px] text-slate-400 uppercase font-bold">Total Staff Users</span>
-              <div className="text-xl font-black text-sky-400 mt-0.5">{totalTenantUsers}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 text-center">
-              <span className="text-[10px] text-slate-400 uppercase font-bold">Client Sites</span>
-              <div className="text-xl font-black text-emerald-400 mt-0.5">{totalSites}</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. KPI METRIC CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* 2. COMPACT 6-METRIC COMMAND RIBBON */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         <div
-          onClick={() => onSelectTab('ca_users')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all cursor-pointer group"
+          onClick={() => onSelectTab('ca_employees')}
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400">Total Users</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <UserCheck className="w-4 h-4" />
-            </div>
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Workforce</span>
+            <Users className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-2xl font-black text-slate-900">{totalTenantUsers}</div>
-          <span className="text-[10px] text-blue-600 font-semibold mt-0.5 block">Staff & Admins →</span>
+          <div className="text-xl font-bold text-slate-900 mt-1">{employeeCount}</div>
+          <div className="text-[10px] text-slate-500 flex items-center justify-between mt-0.5">
+            <span>of {maxEmployees} cap</span>
+            <span className="text-blue-600 font-bold group-hover:underline">Manage →</span>
+          </div>
         </div>
 
         <div
-          onClick={() => onSelectTab('ca_departments')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all cursor-pointer group"
+          onClick={() => onSelectTab('ca_users')}
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400">Departments</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Layers className="w-4 h-4" />
-            </div>
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Staff Users</span>
+            <UserCheck className="w-3.5 h-3.5 text-indigo-600 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-2xl font-black text-slate-900">{totalDepts}</div>
-          <span className="text-[10px] text-indigo-600 font-semibold mt-0.5 block">Divisions →</span>
+          <div className="text-xl font-bold text-slate-900 mt-1">{totalTenantUsers}</div>
+          <div className="text-[10px] text-slate-500 flex items-center justify-between mt-0.5">
+            <span>Admins & HR</span>
+            <span className="text-indigo-600 font-bold group-hover:underline">View →</span>
+          </div>
+        </div>
+
+        <div
+          onClick={() => onSelectTab('ca_sites')}
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
+        >
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Client Sites</span>
+            <MapPin className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+          </div>
+          <div className="text-xl font-bold text-slate-900 mt-1">{totalSites}</div>
+          <div className="text-[10px] text-slate-500 flex items-center justify-between mt-0.5">
+            <span>Active Deployments</span>
+            <span className="text-emerald-600 font-bold group-hover:underline">Posts →</span>
+          </div>
         </div>
 
         <div
           onClick={() => onSelectTab('ca_branches')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all cursor-pointer group"
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400">Branch Hubs</span>
-            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Building2 className="w-4 h-4" />
-            </div>
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Hubs & Depts</span>
+            <Building2 className="w-3.5 h-3.5 text-sky-600 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-2xl font-black text-slate-900">{totalBranches}</div>
-          <span className="text-[10px] text-sky-600 font-semibold mt-0.5 block">Regional Offices →</span>
+          <div className="text-xl font-bold text-slate-900 mt-1">{totalBranches} <span className="text-xs font-normal text-slate-500">/ {totalDepts}</span></div>
+          <div className="text-[10px] text-slate-500 flex items-center justify-between mt-0.5">
+            <span>Branches / Depts</span>
+            <span className="text-sky-600 font-bold group-hover:underline">List →</span>
+          </div>
         </div>
 
         <div
           onClick={() => onSelectTab('ca_roles')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all cursor-pointer group"
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400">Configured Roles</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Shield className="w-4 h-4" />
-            </div>
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Roles Matrix</span>
+            <Shield className="w-3.5 h-3.5 text-purple-600 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-2xl font-black text-slate-900">{roles.length}</div>
-          <span className="text-[10px] text-purple-600 font-semibold mt-0.5 block">RBAC Matrices →</span>
-        </div>
-      </div>
-
-      {/* 4. QUICK ACTIONS & IMPORTANT ALERTS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions Panel */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="text-sm font-black text-slate-900">Administrative Quick Actions</h3>
-              <p className="text-xs text-slate-500">Fast pathways to configure workforce and operations</p>
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-              Phase 3 Live
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {[
-              { id: 'ca_users', title: 'Add New User', desc: 'Invite staff & assign role', icon: UserPlus },
-              { id: 'ca_roles', title: 'Create Custom Role', desc: 'Configure permissions', icon: Shield },
-              { id: 'ca_departments', title: 'New Department', desc: 'Add operational division', icon: Layers },
-              { id: 'ca_branches', title: 'Add Branch Office', desc: 'Regional deployment hub', icon: Building2 },
-              { id: 'ca_sites', title: 'Add Client Site', desc: 'Deployment post & shifts', icon: MapPin },
-              { id: 'ca_profile', title: 'Company Profile', desc: 'Update GSTIN & details', icon: FileText },
-            ].map((action) => {
-              const ActionIcon = action.icon;
-              return (
-                <button
-                  key={action.id}
-                  onClick={() => onSelectTab(action.id)}
-                  className="p-3.5 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/40 text-left transition-all group cursor-pointer"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    <ActionIcon className="w-4 h-4" />
-                  </div>
-                  <div className="font-bold text-xs text-slate-900 group-hover:text-blue-700 transition-colors">
-                    {action.title}
-                  </div>
-                  <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">{action.desc}</div>
-                </button>
-              );
-            })}
+          <div className="text-xl font-bold text-slate-900 mt-1">{roles.length}</div>
+          <div className="text-[10px] text-slate-500 flex items-center justify-between mt-0.5">
+            <span>RBAC Policies</span>
+            <span className="text-purple-600 font-bold group-hover:underline">Config →</span>
           </div>
         </div>
 
-        {/* Important Notifications Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-sm font-black text-slate-900">Notifications & Alerts</h3>
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+        <div
+          onClick={() => onSelectTab('ca_subscription')}
+          className="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-colors cursor-pointer group"
+        >
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Monthly SaaS</span>
+            <CreditCard className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
           </div>
-
-          <div className="space-y-3 text-xs">
-            <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200 flex items-start gap-2.5">
-              <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-blue-900 block">Phase 3 System Activated</span>
-                <p className="text-[11px] text-blue-800 mt-0.5 leading-relaxed">
-                  Company User Management, RBAC Roles, Departments, Branches, and Settings are fully operational.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-slate-900 block">KYC Verification Confirmed</span>
-                <p className="text-[11px] text-slate-600 mt-0.5">
-                  Tenant status verified by Happiiz Super Admin team.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
-              <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-slate-900 block">Subscription Renews in 22 Days</span>
-                <p className="text-[11px] text-slate-600 mt-0.5">
-                  Plan: {currentCompany.subscriptionPlan.toUpperCase()} (₹{currentCompany.monthlyFee?.toLocaleString('en-IN')}/mo).
-                </p>
-              </div>
-            </div>
+          <div className="text-base font-bold text-slate-900 mt-1 truncate">
+            ₹{currentCompany.monthlyFee?.toLocaleString('en-IN') || '49,999'}
+          </div>
+          <div className="text-[10px] text-emerald-600 font-semibold flex items-center justify-between mt-0.5">
+            <span>Paid & Active</span>
+            <span className="font-bold group-hover:underline">Plan →</span>
           </div>
         </div>
       </div>
 
-      {/* 5. COMPANY PROFILE & SUBSCRIPTION SUMMARY */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Company Profile Details Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-sm font-black text-slate-900">Company Overview</h3>
-            <button
-              onClick={() => onSelectTab('ca_profile')}
-              className="text-xs font-bold text-blue-600 hover:underline"
-            >
-              Edit Profile
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3.5 text-xs">
-            <div>
-              <span className="text-[11px] text-slate-400 block">Legal Entity Name</span>
-              <span className="font-bold text-slate-900">{currentCompany.name}</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Brand Display Name</span>
-              <span className="font-bold text-slate-900">{currentCompany.displayName || currentCompany.name}</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Managing Director</span>
-              <span className="font-bold text-slate-900">{currentCompany.directorName || currentCompany.ownerName}</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Business Sector</span>
-              <span className="font-bold text-slate-900">{currentCompany.companyType || currentCompany.industry}</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">GSTIN Registration</span>
-              <span className="font-mono font-bold text-slate-900">
-                {currentCompany.gstNumber || currentCompany.taxId || 'Pending'}
+      {/* 3. TWO-COLUMN BALANCED COCKPIT (Left 62% Operational pathways & audit, Right 38% Entity Profile & Alerts) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* LEFT COLUMN: Operational Shortcuts & Recent Activity */}
+        <div className="lg:col-span-7 space-y-4">
+          {/* Operational Quick Launch Grid */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+            <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Operational Command Launch</h3>
+                <p className="text-[11px] text-slate-500">Instant access to workforce, financial, and deployment operations</p>
+              </div>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded">
+                Modules 1–9 Active
               </span>
             </div>
 
-            <div>
-              <span className="text-[11px] text-slate-400 block">PAN Number</span>
-              <span className="font-mono font-bold text-slate-900">
-                {currentCompany.panNumber || 'Not provided'}
-              </span>
-            </div>
-
-            <div className="col-span-2">
-              <span className="text-[11px] text-slate-400 block">Headquarters Address</span>
-              <span className="font-medium text-slate-800">
-                {currentCompany.address}, {currentCompany.city}, {currentCompany.state} - {currentCompany.pinCode}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Subscription Engine Integration Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-sm font-black text-slate-900">SaaS Subscription & Billing</h3>
-            <button
-              onClick={() => onSelectTab('ca_subscription')}
-              className="text-xs font-bold text-blue-600 hover:underline"
-            >
-              Subscription Details
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3.5 text-xs">
-            <div>
-              <span className="text-[11px] text-slate-400 block">Active Plan Tier</span>
-              <span className="font-black text-purple-700 capitalize text-sm">
-                {currentCompany.subscriptionPlan} Tier
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Payment Standing</span>
-              <span className="font-bold text-emerald-600 uppercase flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Paid & In Good Standing</span>
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Employee License Ceiling</span>
-              <span className="font-mono font-bold text-slate-900 text-sm">{maxEmployees} Workforce Slots</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Current Headcount</span>
-              <span className="font-mono font-bold text-blue-600 text-sm">{employeeCount} Active</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Monthly Flat Base Fee</span>
-              <span className="font-mono font-bold text-slate-900">
-                ₹{currentCompany.monthlyFee?.toLocaleString('en-IN') || '49,999'} / month
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-400 block">Renewal Cycle</span>
-              <span className="font-bold text-slate-800">Monthly Postpaid (Auto)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { id: 'ca_employees', title: 'Workforce HRMS', desc: 'KYC, docs & staff', icon: Users, color: 'text-blue-600 bg-blue-50' },
+                { id: 'ca_attendance', title: 'GPS Attendance', desc: 'Punches & shifts', icon: Clock, color: 'text-sky-600 bg-sky-50' },
+                { id: 'ca_payroll', title: 'Payroll & Wages', desc: 'Pay slips & sheets', icon: Banknote, color: 'text-emerald-600 bg-emerald-50' },
+                { id: 'ca_invoices', title: 'GST Billing', desc: 'Invoices & dues', icon: Receipt, color: 'text-indigo-600 bg-indigo-50' },
+                { id: 'ca_accounting', title: 'Cash & Ledger', desc: 'Accounts & vouchers', icon: BarChart3, color: 'text-purple-600 bg-purple-50' },
+                { id: 'ca_sites', title: 'Client Sites', desc: 'Duty posts & zones', icon: MapPin, color: 'text-amber-600 bg-amber-50' },
+                { id: 'ca_users', title: 'Staff Users', desc: 'Admins & managers', icon: UserPlus, color: 'text-rose-600 bg-rose-50' },
+                { id: 'ca_roles', title: 'Role Security', desc: 'Access permissions', icon: Shield, color: 'text-slate-700 bg-slate-100' },
+              ].map((action) => {
+                const ActionIcon = action.icon;
+                return (
+                  <button
+                    key={action.id}
+                    onClick={() => onSelectTab(action.id)}
+                    className="p-2.5 rounded-lg border border-slate-200/90 hover:border-blue-400 hover:bg-blue-50/30 text-left transition-all group cursor-pointer flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className={`w-6 h-6 rounded-md ${action.color} flex items-center justify-center shrink-0`}>
+                        <ActionIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <ChevronRight className="w-3 h-3 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-xs text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
+                        {action.title}
+                      </div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 leading-tight truncate">{action.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="pt-2">
-            <button
-              onClick={() => onSelectTab('ca_subscription')}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4 text-sky-400" />
-              <span>Expand License Capacity / Upgrade Plan</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. RECENT TENANT ACTIVITY TRAIL */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="text-sm font-black text-slate-900">Recent Tenant Activity</h3>
-            <p className="text-xs text-slate-500">Immutable audit log scoped to {currentCompany.tenantId}</p>
-          </div>
-          <button
-            onClick={() => onSelectTab('ca_audit')}
-            className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
-          >
-            <span>View All Activity Logs</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {tenantLogs.length === 0 ? (
-          <div className="py-6 text-center text-xs text-slate-400">
-            No administrative events recorded yet for this workspace.
-          </div>
-        ) : (
-          <div className="space-y-2.5">
-            {tenantLogs.slice(0, 5).map((log) => (
-              <div
-                key={log.id}
-                className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs"
+          {/* Recent Tenant Activity Audit Log */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Recent Workspace Activity</h3>
+                <p className="text-[11px] text-slate-500">Immutable audit log scoped to {currentCompany.tenantId}</p>
+              </div>
+              <button
+                onClick={() => onSelectTab('ca_audit')}
+                className="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 font-mono text-[11px]">{log.action}</span>
-                    <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.2 rounded uppercase font-bold">
-                      {log.category}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 mt-0.5">{log.details}</p>
-                </div>
-                <div className="text-right text-[11px] font-mono text-slate-400 shrink-0">
-                  {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
+                <span>Full Audit Trail</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+
+            {tenantLogs.length === 0 ? (
+              <div className="py-4 text-center text-xs text-slate-400">
+                No administrative events recorded yet for this workspace.
               </div>
-            ))}
+            ) : (
+              <div className="divide-y divide-slate-100 text-xs">
+                {tenantLogs.slice(0, 4).map((log) => (
+                  <div key={log.id} className="py-2 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-slate-900 font-mono text-[11px]">{log.action}</span>
+                        <span className="text-[9px] text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded uppercase font-bold">
+                          {log.category}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 truncate mt-0.5">{log.details}</p>
+                    </div>
+                    <div className="text-right text-[10px] font-mono text-slate-400 shrink-0">
+                      {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* RIGHT COLUMN: Entity Profile, Subscription Standing & Operational Badges */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Company Legal Profile Card */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Legal Entity Profile</h3>
+              <button
+                onClick={() => onSelectTab('ca_profile')}
+                className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+              >
+                Edit Details
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 text-xs">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Legal Entity</span>
+                <span className="font-bold text-slate-900 truncate block">{currentCompany.name}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Director / MD</span>
+                <span className="font-bold text-slate-900 truncate block">
+                  {currentCompany.directorName || currentCompany.ownerName || 'Not specified'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">GSTIN Registration</span>
+                <span className="font-mono font-bold text-slate-900 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded text-[11px] inline-block">
+                  {currentCompany.gstNumber || currentCompany.taxId || 'Pending'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">PAN Number</span>
+                <span className="font-mono font-bold text-slate-900 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded text-[11px] inline-block">
+                  {currentCompany.panNumber || 'Not provided'}
+                </span>
+              </div>
+              <div className="col-span-2 pt-1 border-t border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Registered Address</span>
+                <p className="text-[11px] text-slate-700 leading-tight mt-0.5">
+                  {currentCompany.address}, {currentCompany.city}, {currentCompany.state} - {currentCompany.pinCode}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Subscription Standing Card */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Subscription & Capacity</h3>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Active & Paid
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Plan Tier</span>
+                <span className="font-bold text-purple-700 capitalize">{currentCompany.subscriptionPlan} Tier</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Monthly Fee</span>
+                <span className="font-mono font-bold text-slate-900">₹{currentCompany.monthlyFee?.toLocaleString('en-IN') || '49,999'}</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">License Ceiling</span>
+                <span className="font-mono font-bold text-slate-900">{maxEmployees} Slots</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Slots Available</span>
+                <span className="font-mono font-bold text-emerald-600">{remainingCapacity} Free</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onSelectTab('ca_subscription')}
+              className="w-full py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+              <span>Manage Plan & Expand License</span>
+            </button>
+          </div>
+
+          {/* Operational Verification Alerts */}
+          <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200/80 text-xs">
+            <div className="flex items-center gap-2 text-blue-900 font-bold mb-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Multi-Tenant Enterprise Isolation</span>
+            </div>
+            <p className="text-[11px] text-blue-800 leading-relaxed">
+              All company documents, attendance punch logs, payroll calculations, and billing vouchers are strictly sandboxed within tenant <span className="font-mono font-bold">{currentCompany.tenantId}</span>.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

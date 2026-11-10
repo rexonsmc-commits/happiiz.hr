@@ -384,8 +384,8 @@ export const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({
         </div>
       )}
 
-      {/* Tabs Navigation */}
-      <div className="flex gap-1.5 overflow-x-auto pb-2 border-b border-slate-200">
+      {/* Tabs Navigation - Multi-Line Wrap */}
+      <div className="flex flex-wrap gap-1.5 pb-2 border-b border-slate-200">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -394,9 +394,9 @@ export const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
               }`}
             >

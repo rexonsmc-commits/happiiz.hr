@@ -181,10 +181,10 @@ export const ActivityLogsModule: React.FC = () => {
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1.5 max-w-[160px]">
                         <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="font-medium text-slate-800">{log.actorEmail}</span>
+                        <span className="font-medium text-slate-800 truncate" title={log.actorEmail}>{log.actorEmail}</span>
                       </div>
                     </td>
 

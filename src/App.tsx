@@ -156,7 +156,7 @@ function MainApp() {
 
   // Authenticated Portal Workspace (Super Admin or Company Admin)
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-100 flex flex-col font-sans overflow-x-hidden">
       {/* Top Navbar */}
       <Navbar
         onToggleSidebar={() => {
@@ -176,7 +176,7 @@ function MainApp() {
       />
 
       {/* Main Workspace Layout */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-w-0">
         {/* Navy Blue Sidebar */}
         <Sidebar
           collapsed={sidebarCollapsed}
@@ -189,11 +189,11 @@ function MainApp() {
 
         {/* Content Area */}
         <main
-          className={`flex-1 transition-all duration-300 p-4 sm:p-6 lg:p-8 ${
+          className={`flex-1 min-w-0 transition-all duration-300 p-3.5 sm:p-4 lg:p-5 ${
             sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
           }`}
         >
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto w-full min-w-0">
             {role === 'super_admin' ? (
               <SuperAdminDashboard
                 activeTab={activeTab}

@@ -1441,6 +1441,18 @@ export async function generatePayrollReadySummary(
   return summary;
 }
 
+export async function getPayrollAttendanceSummaries(
+  companyId: string,
+  tenantId: string,
+  period: string,
+  employees: Employee[] = []
+): Promise<PayrollReadyAttendanceSummary[]> {
+  const records = await getCompanyAttendanceRecords(companyId);
+  const ot = await getOvertimeRequests(companyId);
+  const dd = await getDoubleDutyRecords(companyId);
+  return generatePayrollReadySummary(companyId, tenantId, period, employees, records, ot, dd);
+}
+
 // ==========================================
 // 9. Auto Absent Detection Engine
 // ==========================================

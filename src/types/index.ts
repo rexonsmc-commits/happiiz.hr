@@ -1369,4 +1369,1113 @@ export interface PayrollReadyAttendanceSummary {
   generatedAt: string;
 }
 
+// ==========================================
+// Phase 7: Payroll & Salary Management Models
+// ==========================================
+
+export type SalaryType =
+  | 'monthly'
+  | 'daily'
+  | 'hourly'
+  | 'shift'
+  | 'fixed_contract';
+
+export type PayrollStatus =
+  | 'draft'
+  | 'calculated'
+  | 'pending_approval'
+  | 'approved'
+  | 'finalized'
+  | 'partially_paid'
+  | 'paid'
+  | 'cancelled';
+
+export interface SalaryStructure {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  designation: string;
+  department: string;
+  clientId?: string;
+  siteId?: string;
+  siteName?: string;
+  salaryType: SalaryType;
+  basicSalary: number;
+  hra: number;
+  conveyanceAllowance: number;
+  specialAllowance: number;
+  otherAllowances: number;
+  monthlyGrossSalary: number;
+  dailyWageRate: number;
+  hourlyRate: number;
+  shiftRate: number;
+  overtimeHourlyRate: number;
+  doubleDutyShiftRate: number;
+  holidayDutyRate: number;
+  pfApplicable: boolean;
+  esiApplicable: boolean;
+  ptApplicable: boolean;
+  tdsApplicable: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  status: 'active' | 'superseded' | 'archived';
+  revisionNotes?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SalaryRevision {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeName: string;
+  previousStructureId: string;
+  newStructureId: string;
+  effectiveDate: string;
+  previousGross: number;
+  newGross: number;
+  incrementAmount: number;
+  incrementPercent: number;
+  reason: string;
+  approvedBy: string;
+  createdAt: string;
+}
+
+export interface EmployeeAdvance {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  advanceDate: string;
+  advanceAmount: number;
+  monthlyRecoveryAmount: number;
+  recoveredAmount: number;
+  outstandingAmount: number;
+  paymentMode: 'bank_transfer' | 'cash' | 'upi' | 'cheque';
+  referenceNumber?: string;
+  approvedBy: string;
+  status: 'active' | 'settled' | 'cancelled';
+  remarks?: string;
+  createdAt: string;
+}
+
+export interface AdvanceTransaction {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  advanceId: string;
+  employeeId: string;
+  payrollRunId?: string;
+  transactionDate: string;
+  amount: number;
+  transactionType: 'disbursement' | 'recovery' | 'waiver';
+  remarks?: string;
+  recordedBy: string;
+}
+
+export interface PayrollDeductionItem {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  deductionCategory: 'uniform' | 'shoes' | 'equipment' | 'id_card' | 'loan' | 'penalty' | 'other';
+  description: string;
+  originalAmount: number;
+  monthlyDeductionAmount: number;
+  totalDeductedAmount: number;
+  remainingBalance: number;
+  status: 'active' | 'settled' | 'pending_approval';
+  approvedBy?: string;
+  createdAt: string;
+}
+
+export interface StatutoryConfiguration {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  pfEmployeePercent: number; // e.g. 12%
+  pfEmployerPercent: number; // e.g. 12%
+  pfWageCeiling: number; // e.g. 15,000
+  esiEmployeePercent: number; // e.g. 0.75%
+  esiEmployerPercent: number; // e.g. 3.25%
+  esiWageCeiling: number; // e.g. 21,000
+  ptSlabs: { minGross: number; maxGross: number; taxAmount: number }[];
+  tdsStandardExemptionAnnual: number;
+  standardDivisor: 26 | 30 | 'calendar_days';
+  effectiveYear: string;
+  updatedAt: string;
+}
+
+export interface PayrollRun {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  period: string; // "2026-11"
+  monthName: string;
+  year: number;
+  status: PayrollStatus;
+  totalEmployees: number;
+  totalGrossAmount: number;
+  totalOvertimeAmount: number;
+  totalDoubleDutyAmount: number;
+  totalDeductionsAmount: number;
+  totalNetAmount: number;
+  totalEmployerContribution: number;
+  totalAdvancesRecovered: number;
+  preparedBy?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  finalizedBy?: string;
+  finalizedAt?: string;
+  reopenedBy?: string;
+  reopenedAt?: string;
+  reopenReason?: string;
+  paidCount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PayrollEntry {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  payrollRunId: string;
+  employeeId: string;
+  employeeCode: string;
+  employeeName: string;
+  designation: string;
+  department: string;
+  siteId: string;
+  siteName: string;
+  period: string;
+  salaryType: SalaryType;
+  paymentMode: 'bank_transfer' | 'cash' | 'upi' | 'cheque';
+  bankAccountMasked?: string;
+  ifscCode?: string;
+  bankName?: string;
+  panNumberMasked?: string;
+  scheduledDays: number;
+  payableDays: number;
+  presentDays: number;
+  absentDays: number;
+  halfDays: number;
+  paidLeaveDays: number;
+  weeklyOffDays: number;
+  holidayDays: number;
+  overtimeHours: number;
+  doubleDutyCount: number;
+  basicEarned: number;
+  hraEarned: number;
+  allowancesEarned: number;
+  overtimeAmount: number;
+  doubleDutyAmount: number;
+  holidayDutyAmount: number;
+  bonusAmount: number;
+  totalGrossSalary: number;
+  pfEmployee: number;
+  esiEmployee: number;
+  ptAmount: number;
+  tdsAmount: number;
+  advanceDeduction: number;
+  uniformEquipmentDeduction: number;
+  otherDeductions: number;
+  totalDeductions: number;
+  netPayable: number;
+  pfEmployer: number;
+  esiEmployer: number;
+  totalCostToCompany: number;
+  paymentStatus: 'unpaid' | 'pending' | 'processing' | 'paid' | 'failed';
+  transactionRef?: string;
+  paidAt?: string;
+  remarks?: string;
+}
+
+export interface SalarySlip {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  payrollRunId: string;
+  payrollEntryId: string;
+  employeeId: string;
+  period: string;
+  netSalary: number;
+  generatedAt: string;
+  downloadCount: number;
+}
+
+export interface BankPaymentStatement {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  payrollRunId: string;
+  period: string;
+  totalAmount: number;
+  totalCount: number;
+  paymentMode: 'NEFT_RTGS' | 'UPI' | 'CASH';
+  status: 'generated' | 'reconciled';
+  fileExportDate: string;
+  entries: {
+    employeeId: string;
+    employeeName: string;
+    employeeCode: string;
+    accountNumber: string;
+    ifsc: string;
+    bankName: string;
+    amount: number;
+    remarks: string;
+  }[];
+}
+
+// ==========================================
+// Phase 8: Client Billing, GST Invoicing & Payments Models
+// ==========================================
+
+export type BillingRateType =
+  | 'per_month'
+  | 'per_day'
+  | 'per_hour'
+  | 'per_shift'
+  | 'fixed_contract'
+  | 'quantity_based';
+
+export type InvoiceStatus =
+  | 'draft'
+  | 'pending_review'
+  | 'pending_approval'
+  | 'approved'
+  | 'finalized'
+  | 'sent'
+  | 'partially_paid'
+  | 'paid'
+  | 'overdue'
+  | 'cancelled';
+
+export type InvoiceType =
+  | 'monthly_tax_invoice'
+  | 'site_wise_invoice'
+  | 'supplementary_invoice'
+  | 'additional_services_invoice'
+  | 'one_time_invoice';
+
+export type ClientPaymentStatus =
+  | 'pending'
+  | 'received'
+  | 'partially_received'
+  | 'reconciled'
+  | 'failed'
+  | 'reversed';
+
+export type ClientPaymentMode =
+  | 'bank_transfer'
+  | 'upi'
+  | 'cheque'
+  | 'cash'
+  | 'other';
+
+export interface RateCardItem {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  contractId?: string;
+  siteId?: string;
+  siteName?: string;
+  serviceCategory: 'security' | 'housekeeping' | 'manpower' | 'facility_management';
+  designation: string; // e.g. Security Guard, Security Supervisor, Housekeeper
+  rateType: BillingRateType;
+  clientBillingRate: number; // ₹ charged to client
+  overtimeHourlyRate: number; // ₹ OT rate charged to client
+  doubleDutyShiftRate: number; // ₹ Additional shift rate charged to client
+  hsnSacCode: string; // e.g. "998525" (Security), "998513" (Cleaning)
+  taxRatePercent: number; // Default 18%
+  effectiveFrom: string;
+  effectiveTo?: string;
+  status: 'active' | 'inactive';
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface BillingPolicy {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  contractId?: string;
+  policyName: string;
+  calculationMethod:
+    | 'fixed_monthly'
+    | 'actual_present_days'
+    | 'calendar_day_rate'
+    | 'per_shift'
+    | 'minimum_guaranteed';
+  divisorDays: 26 | 30 | 'calendar_days';
+  deductAbsentDays: boolean;
+  minGuaranteedStaffingCount?: number;
+  otBillingMultiplier?: number;
+  createdAt: string;
+}
+
+export interface AdditionalServiceItem {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  siteId?: string;
+  serviceName: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  discount: number;
+  hsnSacCode: string;
+  taxRate: number;
+  totalAmount: number;
+  isRecurring: boolean;
+  status: 'active' | 'billed' | 'cancelled';
+  createdAt: string;
+}
+
+export interface ServiceChargeConfig {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  chargeType: 'percentage' | 'fixed' | 'per_employee' | 'per_site';
+  chargeValue: number;
+  taxTreatment: 'taxable_under_gst' | 'exempt';
+  status: 'active' | 'inactive';
+}
+
+export interface InvoiceLineItem {
+  id: string;
+  serviceCategory: string;
+  designation: string;
+  description: string;
+  hsnSacCode: string;
+  siteName: string;
+  deployedCount: number;
+  billableDays: number;
+  rateType: BillingRateType;
+  unitRate: number;
+  baseAmount: number;
+  overtimeHours: number;
+  overtimeRate: number;
+  overtimeAmount: number;
+  doubleDutyCount: number;
+  doubleDutyRate: number;
+  doubleDutyAmount: number;
+  discount: number;
+  taxableValue: number;
+  sourceAttendanceRecordIds?: string[];
+}
+
+export interface ClientInvoice {
+  id: string;
+  invoiceNumber: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  clientLegalName?: string;
+  clientAddress: string;
+  clientGstin: string;
+  clientPan?: string;
+  clientState: string;
+  clientStateCode: string;
+  placeOfSupply: string;
+  siteId?: string;
+  siteName?: string;
+  contractId?: string;
+  contractNumber?: string;
+  invoiceType: InvoiceType;
+  billingPeriod: string;
+  invoiceDate: string;
+  dueDate: string;
+  status: InvoiceStatus;
+  items: InvoiceLineItem[];
+  additionalServices: AdditionalServiceItem[];
+  subTotal: number;
+  serviceChargePercent?: number;
+  serviceChargeAmount: number;
+  taxableAmount: number;
+  isInterState: boolean;
+  cgstRate: number;
+  cgstAmount: number;
+  sgstRate: number;
+  sgstAmount: number;
+  igstRate: number;
+  igstAmount: number;
+  totalGst: number;
+  roundOff: number;
+  grandTotal: number;
+  amountInWords: string;
+  paidAmount: number;
+  outstandingAmount: number;
+  isFinalized: boolean;
+  finalizedAt?: string;
+  finalizedBy?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  paymentTerms: string;
+  bankDetails: {
+    beneficiaryName: string;
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+    branchName: string;
+    upiId?: string;
+  };
+  termsAndConditions: string;
+  supplierGstin: string;
+  supplierAddress: string;
+  supplierStateCode: string;
+  cancelledAt?: string;
+  cancelReason?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DebitNoteItem {
+  id: string;
+  documentNumber: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  originalInvoiceId: string;
+  originalInvoiceNumber: string;
+  documentDate: string;
+  reason: string;
+  taxableAmount: number;
+  gstAmount: number;
+  totalAmount: number;
+  status: 'draft' | 'approved' | 'settled';
+  approvedBy?: string;
+  approvedAt?: string;
+  createdAt: string;
+}
+
+export interface CreditNoteItem {
+  id: string;
+  documentNumber: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  originalInvoiceId: string;
+  originalInvoiceNumber: string;
+  documentDate: string;
+  reason: string;
+  taxableAmount: number;
+  gstAmount: number;
+  totalAmount: number;
+  status: 'draft' | 'approved' | 'settled';
+  approvedBy?: string;
+  approvedAt?: string;
+  createdAt: string;
+}
+
+export interface ClientPaymentRecord {
+  id: string;
+  receiptNumber: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  paymentDate: string;
+  amountReceived: number;
+  paymentMode: ClientPaymentMode;
+  bankName?: string;
+  referenceNumber: string;
+  utrNumber?: string;
+  chequeNumber?: string;
+  status: ClientPaymentStatus;
+  recordedBy: string;
+  reconciledBy?: string;
+  reconciledAt?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface ClientLedgerEntry {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  clientId: string;
+  clientName: string;
+  transactionDate: string;
+  entryType: 'INVOICE' | 'PAYMENT' | 'DEBIT_NOTE' | 'CREDIT_NOTE' | 'OPENING_BALANCE';
+  referenceNumber: string;
+  description: string;
+  debitAmount: number;
+  creditAmount: number;
+  runningBalance: number;
+  createdAt: string;
+}
+
+export interface GstConfiguration {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  supplierLegalName: string;
+  supplierTradeName: string;
+  supplierGstin: string;
+  supplierPan: string;
+  stateName: string;
+  stateCode: string;
+  registeredAddress: string;
+  defaultSecuritySacCode: string;
+  defaultHousekeepingSacCode: string;
+  defaultManpowerSacCode: string;
+  standardGstRate: number;
+  reverseChargeApplicable: boolean;
+  invoiceNumberPrefix: string;
+  financialYear: string;
+  nextInvoiceSequence: number;
+  updatedAt: string;
+}
+
+export interface ClientProfitabilityReport {
+  id: string;
+  clientId: string;
+  clientName: string;
+  siteId?: string;
+  siteName?: string;
+  period: string;
+  billedRevenue: number;
+  serviceChargeRevenue: number;
+  overtimeBilledRevenue: number;
+  additionalServiceRevenue: number;
+  totalClientRevenue: number;
+  workforceGrossWages: number;
+  workforceOvertimeCost: number;
+  workforceDoubleDutyCost: number;
+  employerStatutoryCost: number;
+  operationalCosts: number;
+  totalCostOfService: number;
+  estimatedGrossMargin: number;
+  grossMarginPercentage: number;
+  estimatedOperatingProfit: number;
+}
+
+// ==========================================
+// Phase 9: Accounting & Financial Management Types
+// ==========================================
+
+export type AccountType = 'asset' | 'liability' | 'equity' | 'income' | 'expense';
+
+export type AccountSubCategory =
+  | 'cash'
+  | 'bank'
+  | 'accounts_receivable'
+  | 'advances'
+  | 'current_asset'
+  | 'fixed_asset'
+  | 'accounts_payable'
+  | 'salary_payable'
+  | 'statutory_payable'
+  | 'current_liability'
+  | 'long_term_liability'
+  | 'owner_equity'
+  | 'retained_earnings'
+  | 'direct_income'
+  | 'indirect_income'
+  | 'payroll_expense'
+  | 'direct_operational_expense'
+  | 'administrative_expense'
+  | 'financial_expense'
+  | 'depreciation_expense';
+
+export interface ChartOfAccount {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: AccountType;
+  subCategory: AccountSubCategory;
+  parentAccountId?: string;
+  description: string;
+  openingBalance: number;
+  currentBalance: number;
+  isSystemAccount: boolean;
+  isActive: boolean;
+  currency: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JournalLine {
+  id: string;
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+  lineNarration?: string;
+}
+
+export type JournalReferenceType =
+  | 'client_invoice'
+  | 'client_payment'
+  | 'client_credit_note'
+  | 'client_debit_note'
+  | 'payroll_salary'
+  | 'salary_disbursement'
+  | 'expense_voucher'
+  | 'purchase_bill'
+  | 'vendor_payment'
+  | 'fixed_asset_purchase'
+  | 'depreciation'
+  | 'bank_contra'
+  | 'manual_journal'
+  | 'opening_balance'
+  | 'period_closing';
+
+export interface JournalEntry {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  journalNumber: string;
+  accountingDate: string;
+  financialYear: string;
+  financialPeriod: string;
+  narration: string;
+  referenceType: JournalReferenceType;
+  referenceId?: string;
+  totalDebit: number;
+  totalCredit: number;
+  status: 'draft' | 'posted' | 'reversed';
+  lines: JournalLine[];
+  createdBy: string;
+  approvedBy?: string;
+  postedAt?: string;
+  isReversed?: boolean;
+  reversalOfJournalId?: string;
+  reversedByJournalId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CashTransaction {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  voucherNumber: string;
+  date: string;
+  type: 'cash_in' | 'cash_out' | 'deposit_to_bank' | 'withdraw_from_bank';
+  amount: number;
+  accountId: string;
+  accountName: string;
+  description: string;
+  referenceNumber?: string;
+  paymentMode: 'cash';
+  balanceAfter: number;
+  approvedBy?: string;
+  status: 'posted' | 'cancelled';
+  journalId?: string;
+  createdAt: string;
+}
+
+export interface BankAccount {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  bankName: string;
+  accountName: string;
+  accountNumberMasked: string;
+  ifscCode: string;
+  branchName: string;
+  accountType: 'current' | 'savings' | 'overdraft' | 'escrow';
+  openingBalance: number;
+  currentBalance: number;
+  bookBalance: number;
+  isPrimary: boolean;
+  status: 'active' | 'inactive';
+  upiId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BankTransaction {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  bankAccountId: string;
+  voucherNumber: string;
+  transactionDate: string;
+  type: 'credit' | 'debit';
+  amount: number;
+  contraBankAccountId?: string;
+  contraCashAccountId?: string;
+  description: string;
+  utrNumber?: string;
+  chequeNumber?: string;
+  partyName?: string;
+  referenceType?: JournalReferenceType;
+  referenceId?: string;
+  isReconciled: boolean;
+  reconciliationDate?: string;
+  reconciliationId?: string;
+  balanceAfter: number;
+  status: 'posted' | 'cleared' | 'bounced' | 'cancelled';
+  journalId?: string;
+  createdAt: string;
+}
+
+export interface BankReconciliation {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  bankAccountId: string;
+  statementDate: string;
+  statementBalance: number;
+  bookBalance: number;
+  unreconciledChequesTotal: number;
+  unreconciledDepositsTotal: number;
+  adjustedBookBalance: number;
+  difference: number;
+  status: 'reconciled' | 'discrepant';
+  reconciledBy: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export type ExpenseCategory =
+  | 'office_rent'
+  | 'electricity'
+  | 'internet_telecom'
+  | 'transport_fuel'
+  | 'uniform_kits'
+  | 'security_equipment'
+  | 'cleaning_materials'
+  | 'office_stationery'
+  | 'software_licenses'
+  | 'professional_legal_fees'
+  | 'repairs_maintenance'
+  | 'marketing_advertisement'
+  | 'travel_food'
+  | 'bank_charges'
+  | 'miscellaneous';
+
+export interface ExpenseRecord {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  expenseNumber: string;
+  expenseDate: string;
+  category: ExpenseCategory;
+  vendorId?: string;
+  vendorName?: string;
+  siteId?: string;
+  siteName?: string;
+  clientId?: string;
+  clientName?: string;
+  description: string;
+  amount: number;
+  taxableAmount: number;
+  gstAmount: number;
+  gstRate: number;
+  isItcEligible: boolean;
+  paymentMode: 'cash' | 'bank_transfer' | 'cheque' | 'upi';
+  bankAccountId?: string;
+  invoiceNumber?: string;
+  receiptUrl?: string;
+  status: 'draft' | 'approved' | 'rejected' | 'posted';
+  approvedBy?: string;
+  journalId?: string;
+  paymentVoucherId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IncomeRecord {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  incomeNumber: string;
+  date: string;
+  category: 'security_services' | 'housekeeping_services' | 'manpower_supply' | 'consultancy' | 'interest_income' | 'other_income';
+  clientName?: string;
+  clientId?: string;
+  description: string;
+  amount: number;
+  paymentMode: 'bank_transfer' | 'cash' | 'cheque' | 'upi';
+  bankAccountId?: string;
+  referenceNumber?: string;
+  status: 'draft' | 'approved' | 'posted';
+  journalId?: string;
+  receiptVoucherId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type VendorCategory =
+  | 'uniforms'
+  | 'security_equipment'
+  | 'cleaning_supplies'
+  | 'office_supplies'
+  | 'it_hardware'
+  | 'facility_consumables'
+  | 'professional_services'
+  | 'logistics_transport'
+  | 'other';
+
+export interface Vendor {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  vendorCode: string;
+  vendorName: string;
+  businessName: string;
+  category: VendorCategory;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  stateCode: string;
+  gstin: string;
+  pan: string;
+  paymentTerms: string;
+  bankDetails: {
+    bankName: string;
+    accountNumberMasked: string;
+    ifscCode: string;
+    branchName: string;
+    upiId?: string;
+  };
+  openingBalance: number;
+  currentBalance: number;
+  totalBilled: number;
+  totalPaid: number;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PurchaseBillItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unitRate: number;
+  taxableAmount: number;
+  gstRate: number;
+  gstAmount: number;
+  totalAmount: number;
+}
+
+export interface PurchaseBill {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  billNumber: string;
+  vendorId: string;
+  vendorName: string;
+  vendorInvoiceNumber: string;
+  billDate: string;
+  dueDate: string;
+  category: VendorCategory;
+  items: PurchaseBillItem[];
+  subTotal: number;
+  discount: number;
+  taxableAmount: number;
+  cgstAmount: number;
+  sgstAmount: number;
+  igstAmount: number;
+  totalGst: number;
+  isItcEligible: boolean;
+  grandTotal: number;
+  paidAmount: number;
+  outstandingAmount: number;
+  status: 'draft' | 'approved' | 'partially_paid' | 'paid' | 'posted';
+  journalId?: string;
+  paymentVoucherIds?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentVoucher {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  voucherNumber: string;
+  voucherDate: string;
+  voucherType: 'vendor_payment' | 'expense_payment' | 'salary_payment' | 'advance_payment' | 'statutory_payment' | 'other_payment';
+  payeeName: string;
+  payeeType: 'vendor' | 'employee' | 'statutory' | 'utility' | 'other';
+  payeeId?: string;
+  debitAccountId: string;
+  debitAccountName: string;
+  creditAccountId: string;
+  creditAccountName: string;
+  amount: number;
+  tdsDeducted?: number;
+  netPaidAmount: number;
+  paymentMode: 'cash' | 'bank_transfer' | 'cheque' | 'upi';
+  bankAccountId?: string;
+  chequeOrUtrNumber?: string;
+  narration: string;
+  referenceType?: string;
+  referenceId?: string;
+  journalId?: string;
+  approvedBy?: string;
+  status: 'posted' | 'cancelled';
+  createdAt: string;
+}
+
+export interface ReceiptVoucher {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  voucherNumber: string;
+  voucherDate: string;
+  voucherType: 'client_payment' | 'advance_receipt' | 'other_income' | 'cash_sale';
+  receivedFrom: string;
+  payerType: 'client' | 'other';
+  payerId?: string;
+  debitAccountId: string;
+  debitAccountName: string;
+  creditAccountId: string;
+  creditAccountName: string;
+  amount: number;
+  tdsDeducted?: number;
+  netReceivedAmount: number;
+  paymentMode: 'cash' | 'bank_transfer' | 'cheque' | 'upi';
+  bankAccountId?: string;
+  chequeOrUtrNumber?: string;
+  narration: string;
+  referenceType?: string;
+  referenceId?: string;
+  journalId?: string;
+  approvedBy?: string;
+  status: 'posted' | 'cancelled';
+  createdAt: string;
+}
+
+export interface GeneralLedgerEntry {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: AccountType;
+  date: string;
+  financialYear: string;
+  voucherType: string;
+  voucherNumber: string;
+  referenceId?: string;
+  narration: string;
+  debit: number;
+  credit: number;
+  runningBalance: number;
+  journalId: string;
+  createdAt: string;
+}
+
+export interface TrialBalanceRow {
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: AccountType;
+  subCategory: AccountSubCategory;
+  openingDebit: number;
+  openingCredit: number;
+  periodDebit: number;
+  periodCredit: number;
+  closingDebit: number;
+  closingCredit: number;
+}
+
+export interface AccountingPeriod {
+  periodKey: string;
+  monthName: string;
+  startDate: string;
+  endDate: string;
+  isLocked: boolean;
+  lockedAt?: string;
+  lockedBy?: string;
+}
+
+export interface FinancialYearConfig {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  label: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  isClosed: boolean;
+  closedAt?: string;
+  closedBy?: string;
+  periods: AccountingPeriod[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type FixedAssetCategory =
+  | 'security_equipment'
+  | 'vehicles'
+  | 'it_computers'
+  | 'furniture_fixtures'
+  | 'cleaning_machinery'
+  | 'office_equipment';
+
+export interface FixedAssetRecord {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  assetCode: string;
+  assetName: string;
+  category: FixedAssetCategory;
+  purchaseDate: string;
+  purchaseCost: number;
+  vendorId?: string;
+  vendorName?: string;
+  invoiceNumber?: string;
+  usefulLifeYears: number;
+  salvageValue: number;
+  depreciationMethod: 'straight_line' | 'written_down_value';
+  depreciationRatePercentage: number;
+  accumulatedDepreciation: number;
+  currentBookValue: number;
+  status: 'active' | 'disposed' | 'written_off';
+  disposalDate?: string;
+  disposalAmount?: number;
+  lastDepreciationDate?: string;
+  journalId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AccountingAuditLog {
+  id: string;
+  tenantId: string;
+  companyId: string;
+  timestamp: string;
+  action: string;
+  module: string;
+  recordId: string;
+  performedBy: string;
+  details: string;
+}
+
+
+
 

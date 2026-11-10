@@ -1,0 +1,1253 @@
+# HAPPIIZ HR – PHASE 7
+# COMPLETE PAYROLL & SALARY MANAGEMENT SYSTEM
+# AUTOMATIC WAGES + OVERTIME + DOUBLE DUTY + ADVANCE + DEDUCTIONS + PDF PAYSLIPS
+
+Act as a Senior SaaS Software Architect, Payroll Management Specialist, HRMS Developer, Firebase Backend Engineer, Database Architect and Financial Software Security Expert.
+
+We are continuing the existing Happiiz HR project.
+
+PHASE 1, PHASE 2, PHASE 3, PHASE 4, PHASE 5 AND PHASE 6 ARE ALREADY COMPLETED.
+
+Your task is to develop PHASE 7: COMPLETE PAYROLL AND SALARY MANAGEMENT SYSTEM.
+
+IMPORTANT:
+
+- Continue the existing Happiiz HR project.
+- Do not create a new application.
+- Do not create a new Firebase project.
+- Do not replace existing authentication.
+- Do not damage existing modules.
+- Do not rebuild Phase 1–6.
+- Reuse the existing Employee Management system.
+- Reuse existing Client and Site Management.
+- Reuse existing Attendance and Duty Roster.
+- Reuse existing Role and Permission Management.
+- Reuse the existing multi-tenant subscription architecture.
+- Inspect the existing source code and database before making changes.
+- Implement actual working functionality, not just UI designs.
+
+# 1. MAIN OBJECTIVE
+
+Build a complete Automatic Payroll Management System for:
+
+1. Security Guard Companies
+2. Security Agencies
+3. Housekeeping Companies
+4. Manpower Supply Companies
+5. Facility Management Companies
+
+The system must calculate employee wages based on finalized attendance, salary structures, assigned sites, approved overtime, double duty, allowances, advances and authorized deductions.
+
+Every tenant/security company must manage its own employees and payroll independently.
+
+The Super Admin must have controlled platform-level visibility.
+
+# 2. PAYROLL DASHBOARD
+
+Create a professional Payroll Dashboard.
+
+Display:
+
+- Total Employees
+- Total Payroll Employees
+- Active Employees
+- Payroll Processed
+- Payroll Pending
+- Payroll Approved
+- Payroll Paid
+- Total Gross Salary
+- Total Overtime Amount
+- Total Deductions
+- Total Net Salary
+- Outstanding Advances
+- Pending Salary Slips
+
+Add dashboard filters:
+
+- Payroll Month
+- Payroll Year
+- Employee
+- Employee ID
+- Client
+- Site
+- Department
+- Designation
+- Salary Type
+- Payroll Status
+
+Create summary charts:
+
+- Monthly Payroll Trends
+- Salary Distribution
+- Site-Wise Payroll
+- Department-Wise Payroll
+- Earnings vs Deductions
+
+Use real database data.
+
+Never show fabricated financial statistics.
+
+# 3. EMPLOYEE SALARY STRUCTURE
+
+Create an Employee Salary Structure Management module.
+
+Every employee must have an independently configurable salary structure.
+
+Salary types:
+
+A. Monthly Salary
+B. Daily Wages
+C. Hourly Wages
+D. Per Shift Payment
+E. Fixed Contract Salary
+
+Salary structure fields:
+
+- Employee ID
+- Tenant ID
+- Employee Name
+- Designation
+- Department
+- Client ID
+- Site ID
+- Salary Type
+- Basic Salary
+- Monthly Gross Salary
+- Daily Wage Rate
+- Hourly Rate
+- Shift Rate
+- House Rent Allowance
+- Conveyance Allowance
+- Special Allowance
+- Other Allowances
+- Overtime Rate
+- Double Duty Rate
+- Holiday Duty Rate
+- Effective From
+- Effective To
+- Salary Status
+
+Features:
+
+- Create Salary Structure
+- Edit Salary Structure
+- Update Salary
+- Salary Revision History
+- Employee-Wise Salary
+- Site-Wise Salary
+- Designation-Wise Salary
+- Bulk Salary Structure Import
+- Salary Structure PDF/Print
+
+Important:
+
+Maintain historical salary structures.
+
+When an employee's salary changes, the new salary must apply only from its effective date.
+
+Do not modify already finalized payroll records when a salary structure changes.
+
+# 4. AUTOMATIC ATTENDANCE-BASED SALARY CALCULATION
+
+Integrate Phase 6 Finalized Attendance.
+
+Automatically retrieve:
+
+- Total Scheduled Duty
+- Present Days
+- Absent Days
+- Half Days
+- Approved Leave
+- Weekly Off
+- Holiday Duty
+- Overtime Hours
+- Approved Double Duty
+- Late Minutes
+- Early Leaving Minutes
+
+The system must calculate wages based on the employee's salary type and configured payroll policy.
+
+Example:
+
+Employee Monthly Salary: ₹18,000
+
+Payroll Period: 30 Days
+
+Present Days: 26
+
+Absent Days: 2
+
+Paid Weekly Off: 2
+
+Example calculation:
+
+Daily Salary = ₹18,000 / 30
+
+Daily Salary = ₹600
+
+Payable Days = 28
+
+Earned Salary = ₹600 × 28
+
+Earned Salary = ₹16,800
+
+This is only an illustrative calculation.
+
+Actual payable days, divisor, paid leave, weekly off and rounding must follow the tenant's configured salary policy and applicable legal requirements.
+
+Support different calculation policies:
+
+- Calendar Days
+- Fixed 30 Days
+- Actual Working Days
+- Configured Payroll Divisor
+
+Do not apply one calculation formula to every tenant.
+
+# 5. OVERTIME PAYMENT CALCULATION
+
+Integrate Phase 6 Approved Overtime.
+
+Retrieve:
+
+- Employee ID
+- Site ID
+- Overtime Date
+- Approved Overtime Hours
+- Applicable Overtime Rate
+- Overtime Policy
+
+Calculation example:
+
+Overtime Hours: 20
+
+Hourly Overtime Rate: ₹100
+
+Overtime Amount: ₹2,000
+
+Formula:
+
+Approved Overtime Hours × Applicable Overtime Rate
+
+Support:
+
+- Normal Overtime
+- Holiday Overtime
+- Weekly Off Overtime
+- Special Overtime
+
+Allow different overtime policies for different employees, sites and tenants.
+
+Use only approved overtime.
+
+Prevent duplicate overtime payments.
+
+Do not automatically assume that the standard hourly wage is the legally applicable overtime rate.
+
+Allow authorized administrators to configure rates according to applicable law and employment agreements.
+
+# 6. DOUBLE DUTY PAYMENT
+
+Create a dedicated Double Duty Payroll module.
+
+Integrate Phase 6 Double Duty records.
+
+Features:
+
+- Employee-Wise Double Duty
+- Site-Wise Double Duty
+- Date-Wise Double Duty
+- Approved Double Duty Count
+- Additional Shift Rate
+- Additional Shift Payment
+- Double Duty Amount
+
+Example:
+
+Normal Shift Payment: ₹700
+
+Additional Shift Payment: ₹700
+
+Total Payment: ₹1,400
+
+This is an illustrative example only.
+
+The actual additional duty payment must follow the employee's approved salary and duty policy.
+
+Important:
+
+- Do not count the same additional shift twice.
+- Retrieve approved records only.
+- Maintain separate primary and additional duty entries.
+- Allow authorized verification.
+- Preserve historical payment calculations.
+
+# 7. HOLIDAY AND WEEKLY OFF PAYMENT
+
+Implement:
+
+- Holiday Duty Payment
+- Weekly Off Duty Payment
+- Compensatory Off Integration
+- Paid Holiday
+- Unpaid Holiday
+- Holiday Overtime
+
+The system must support configurable policies for different employees, sites and clients.
+
+Do not automatically assume every holiday or weekly off has the same payment rate.
+
+# 8. ADVANCE PAYMENT MANAGEMENT
+
+Create a complete Employee Advance Management System.
+
+Features:
+
+- Issue Advance
+- Record Advance Payment
+- Advance History
+- Advance Outstanding Balance
+- Monthly Advance Recovery
+- Partial Advance Deduction
+- Full Advance Deduction
+- Advance Settlement
+- Advance Approval
+- Advance Receipt PDF
+
+Advance fields:
+
+- Advance ID
+- Employee ID
+- Employee Name
+- Advance Date
+- Advance Amount
+- Payment Mode
+- Reference Number
+- Approved By
+- Recovery Amount
+- Outstanding Amount
+- Status
+- Remarks
+
+Example:
+
+Employee Advance: ₹5,000
+
+Previous Recovery: ₹1,000
+
+Outstanding: ₹4,000
+
+Current Month Recovery: ₹1,000
+
+Remaining Outstanding: ₹3,000
+
+Prevent deductions exceeding the outstanding advance balance.
+
+Maintain a complete advance ledger.
+
+# 9. UNIFORM AND OTHER EMPLOYEE DEDUCTIONS
+
+Create a Deduction Management module.
+
+Deduction categories:
+
+- Uniform
+- Shoes
+- Security Equipment
+- ID Card
+- Other Approved Items
+- Employee Loan
+- Authorized Debit
+- Other Recoveries
+
+Fields:
+
+- Deduction ID
+- Employee ID
+- Deduction Category
+- Description
+- Original Amount
+- Deduction Amount
+- Remaining Balance
+- Deduction Date
+- Approval Status
+- Approved By
+- Supporting Document
+
+Features:
+
+- Create Deduction
+- Approve Deduction
+- Partial Deduction
+- Monthly Deduction
+- Deduction History
+- Outstanding Deduction
+- Deduction Receipt
+
+Important:
+
+- Maintain item-wise records.
+- Prevent duplicate deductions.
+- Do not allow unauthorized deductions.
+- Respect applicable labour laws, wage protections and employee authorization requirements.
+- Apply configurable deduction limits.
+- Do not automatically deduct every debit without approval.
+
+# 10. BONUS, INCENTIVES AND ALLOWANCES
+
+Create an Earnings Management module.
+
+Categories:
+
+- Attendance Bonus
+- Performance Bonus
+- Festival Bonus
+- Special Incentive
+- Night Shift Allowance
+- Travel Allowance
+- Food Allowance
+- Accommodation Allowance
+- Other Allowances
+- Reimbursements
+
+Features:
+
+- Employee-Wise Earnings
+- Site-Wise Incentives
+- Monthly Bonus
+- One-Time Bonus
+- Recurring Allowance
+- Approval Workflow
+- Earnings History
+
+Allow administrators to configure eligibility and calculation policies.
+
+# 11. STATUTORY PAYROLL CONFIGURATION
+
+Create a configurable statutory payroll section.
+
+Support applicable configurations for:
+
+- Provident Fund (PF)
+- Employee State Insurance (ESI)
+- Professional Tax (where applicable)
+- Tax Deduction at Source (TDS), where applicable
+- Labour Welfare Fund, where applicable
+- Other Statutory Components
+
+Requirements:
+
+- Tenant-specific configuration
+- Employee eligibility
+- Applicable wage components
+- Employer contribution
+- Employee contribution
+- Effective dates
+- Exemption settings where legally permitted
+- Statutory calculation reports
+
+IMPORTANT:
+
+Do not hardcode statutory rates or thresholds.
+
+Use legally verified, configurable and effective-dated rules.
+
+Do not assume every employee or tenant has identical statutory applicability.
+
+Do not claim statutory compliance without proper verification.
+
+Maintain a configuration history and provide a way for authorized administrators to update rules when legislation changes.
+
+# 12. AUTOMATIC GROSS AND NET SALARY
+
+Create the complete salary calculation engine.
+
+Salary calculation structure:
+
+A. EARNINGS
+
+- Basic Salary
+- HRA
+- Other Allowances
+- Attendance-Based Wages
+- Approved Overtime
+- Double Duty
+- Holiday Duty
+- Bonus
+- Incentives
+- Reimbursements
+
+B. DEDUCTIONS
+
+- Advance Recovery
+- Uniform Deduction
+- Equipment Deduction
+- Approved Employee Debit
+- Employee PF Contribution, where applicable
+- Employee ESI Contribution, where applicable
+- Professional Tax, where applicable
+- TDS, where applicable
+- Other Authorized Deductions
+
+C. FINAL CALCULATION
+
+Gross Earnings = Sum of all applicable earnings.
+
+Net Payable = Gross Earnings - Total Deductions.
+
+Employer statutory contributions must be separately displayed and must not be incorrectly deducted from employee net salary.
+
+Every salary component must have a clear calculation breakdown.
+
+# 13. PAYROLL PROCESSING WORKFLOW
+
+Create a complete monthly payroll processing system.
+
+Workflow:
+
+1. Select Payroll Month.
+2. Select Payroll Year.
+3. Retrieve Active Employees.
+4. Retrieve Finalized Attendance.
+5. Retrieve Approved Overtime.
+6. Retrieve Approved Double Duty.
+7. Retrieve Salary Structures.
+8. Retrieve Approved Advances.
+9. Retrieve Approved Deductions.
+10. Calculate Earnings.
+11. Calculate Deductions.
+12. Calculate Gross Salary.
+13. Calculate Net Salary.
+14. Generate Payroll Preview.
+15. Submit for Approval.
+16. Approve Payroll.
+17. Finalize Payroll.
+18. Generate Employee Salary Slips.
+
+Payroll statuses:
+
+- Draft
+- Processing
+- Calculated
+- Pending Approval
+- Approved
+- Finalized
+- Partially Paid
+- Paid
+- Cancelled
+
+Features:
+
+- Single Employee Payroll
+- Bulk Employee Payroll
+- Site-Wise Payroll
+- Department-Wise Payroll
+- Designation-Wise Payroll
+- Monthly Payroll
+- Payroll Preview
+- Payroll Recalculation
+- Payroll Approval
+- Payroll Finalization
+
+Do not process payroll for employees without valid payroll data.
+
+Show missing information and validation errors.
+
+# 14. PAYROLL LOCK AND REOPENING
+
+Create a secure Payroll Lock system.
+
+Once payroll is finalized:
+
+- Prevent unauthorized modification.
+- Preserve the finalized calculation.
+- Preserve salary structure snapshot.
+- Preserve attendance summary snapshot.
+- Preserve deduction snapshot.
+- Preserve earnings snapshot.
+- Preserve statutory configuration snapshot.
+
+Only authorized users can reopen finalized payroll.
+
+Every reopening must require:
+
+- Reason
+- User ID
+- Timestamp
+- Approval, where configured
+- Audit Log
+
+Never silently change historical payroll.
+
+If corrections are necessary after payment, create an adjustment or supplementary payroll entry rather than overwriting the paid payroll.
+
+# 15. EMPLOYEE SALARY SLIP PDF
+
+Create a professional Salary Slip PDF.
+
+Company details:
+
+- Security Company Name
+- Company Logo
+- Company Address
+- Contact Details
+- GSTIN, if applicable
+
+Employee details:
+
+- Employee Name
+- Employee ID
+- Designation
+- Department
+- Client Name
+- Site Name
+- Joining Date
+- Salary Month
+- Bank Details (masked)
+- UAN/ESI details, where applicable
+
+Earnings:
+
+- Basic Salary
+- HRA
+- Allowances
+- Attendance Wages
+- Overtime
+- Double Duty
+- Bonus
+- Incentives
+- Other Earnings
+
+Deductions:
+
+- Advance
+- Uniform
+- Equipment
+- PF
+- ESI
+- Tax
+- Other Authorized Deductions
+
+Summary:
+
+- Total Earnings
+- Total Deductions
+- Net Payable
+- Amount in Words
+- Payment Status
+- Generation Date
+
+Features:
+
+- Generate Salary Slip PDF
+- Download PDF
+- Print Salary Slip
+- Share Salary Slip
+- Employee Portal Access
+- Salary Slip History
+
+Use a professional A4 layout.
+
+Do not expose other employees' salary information.
+
+# 16. BULK SALARY SLIP GENERATION
+
+Allow administrators to generate salary slips for multiple employees.
+
+Features:
+
+- Select Payroll Month
+- Select Site
+- Select Department
+- Select Employees
+- Generate All Salary Slips
+- Download Individual PDFs
+- Generate ZIP Archive
+- Print Selected Salary Slips
+
+Only finalized payroll records can generate official salary slips.
+
+Draft payroll may generate clearly marked preview slips.
+
+# 17. EMPLOYEE SELF-SERVICE PAYROLL PORTAL
+
+Integrate the existing Employee Portal.
+
+Employees must be able to:
+
+- View My Salary
+- View Monthly Salary
+- Download Salary Slip PDF
+- View Earnings
+- View Deductions
+- View Advance Balance
+- View Advance History
+- View Overtime Payment
+- View Double Duty Payment
+- View Payment Status
+- View Previous Payroll History
+- Download Available Payroll Documents
+
+Employee permissions:
+
+An employee can only view their own payroll information.
+
+Do not allow employees to edit approved salary information.
+
+# 18. BANK PAYMENT MANAGEMENT
+
+Create a Bank Payment Management module.
+
+Features:
+
+- Payroll Payment List
+- Employee Bank Details
+- Payment Amount
+- Payment Mode
+- Transaction Reference
+- Payment Date
+- Payment Status
+
+Payment statuses:
+
+- Unpaid
+- Pending
+- Processing
+- Paid
+- Failed
+- Reversed
+
+Support:
+
+- Cash
+- Bank Transfer
+- UPI
+- Other Configured Payment Methods
+
+Features:
+
+- Bulk Payment Statement
+- Bank Transfer CSV Export
+- Employee-Wise Payment History
+- Payment Receipt
+- Payment Reconciliation
+
+IMPORTANT:
+
+Do not claim that money has been transferred automatically unless an authorized payment gateway or bank integration is actually implemented.
+
+CSV export is not the same as executing bank payments.
+
+Never store banking passwords, PINs or OTPs.
+
+Mask sensitive bank information in ordinary screens.
+
+# 19. PAYROLL REPORTS
+
+Create professional reports:
+
+- Monthly Payroll Report
+- Employee Salary Report
+- Site-Wise Payroll
+- Client-Wise Employee Cost
+- Department-Wise Payroll
+- Overtime Payment Report
+- Double Duty Payment Report
+- Advance Report
+- Deduction Report
+- Bonus Report
+- PF Report
+- ESI Report
+- Bank Payment Report
+- Outstanding Advance Report
+- Unpaid Salary Report
+- Payroll History
+
+Export formats:
+
+- PDF
+- Excel-compatible CSV
+- Print
+
+Use pagination and optimized database queries.
+
+# 20. EMPLOYEE PAYROLL COST ANALYSIS
+
+Create an internal payroll cost analysis dashboard.
+
+Show:
+
+- Employee Salary Cost
+- Overtime Cost
+- Double Duty Cost
+- Allowance Cost
+- Employer Statutory Contributions
+- Total Employment Cost
+- Site-Wise Employee Cost
+- Department-Wise Employee Cost
+
+Keep internal employee cost calculations separate from client billing and revenue.
+
+Prepare structured data for future Client Billing integration.
+
+# 21. FIRESTORE DATABASE ARCHITECTURE
+
+Continue the existing multi-tenant database structure.
+
+Suggested collections:
+
+tenants/{tenantId}/salaryStructures/{salaryStructureId}
+
+tenants/{tenantId}/salaryRevisions/{revisionId}
+
+tenants/{tenantId}/payrollRuns/{payrollRunId}
+
+tenants/{tenantId}/payrollEntries/{payrollEntryId}
+
+tenants/{tenantId}/payrollEarnings/{earningId}
+
+tenants/{tenantId}/payrollDeductions/{deductionId}
+
+tenants/{tenantId}/employeeAdvances/{advanceId}
+
+tenants/{tenantId}/advanceTransactions/{transactionId}
+
+tenants/{tenantId}/employeeLoans/{loanId}
+
+tenants/{tenantId}/employeeAllowances/{allowanceId}
+
+tenants/{tenantId}/employeeBonuses/{bonusId}
+
+tenants/{tenantId}/employeeReimbursements/{reimbursementId}
+
+tenants/{tenantId}/statutoryConfigurations/{configurationId}
+
+tenants/{tenantId}/payrollPayments/{paymentId}
+
+tenants/{tenantId}/salarySlips/{salarySlipId}
+
+tenants/{tenantId}/payrollAdjustments/{adjustmentId}
+
+tenants/{tenantId}/payrollAuditLogs/{logId}
+
+Use consistent fields:
+
+- tenantId
+- employeeId
+- payrollRunId
+- payrollPeriod
+- salaryStructureId
+- clientId
+- siteId
+- amount
+- currency
+- status
+- createdAt
+- updatedAt
+- createdBy
+- approvedBy
+- finalizedAt
+
+Use references to existing employee, client, site and attendance records.
+
+Do not duplicate master data unnecessarily.
+
+Use secure transactions and atomic operations for financial ledger updates.
+
+Use integer minor currency units or a consistent decimal-safe money representation. Never use unsafe floating-point arithmetic for monetary calculations.
+
+Add necessary Firestore indexes.
+
+Implement pagination.
+
+# 22. BACKEND API ARCHITECTURE
+
+Adapt these endpoints to the existing backend architecture.
+
+SALARY STRUCTURE:
+
+POST /api/payroll/salary-structures
+
+GET /api/payroll/salary-structures
+
+PUT /api/payroll/salary-structures/:id
+
+GET /api/payroll/salary-structures/employee/:employeeId
+
+PAYROLL:
+
+POST /api/payroll/runs
+
+GET /api/payroll/runs
+
+GET /api/payroll/runs/:id
+
+POST /api/payroll/runs/:id/calculate
+
+POST /api/payroll/runs/:id/submit
+
+POST /api/payroll/runs/:id/approve
+
+POST /api/payroll/runs/:id/finalize
+
+POST /api/payroll/runs/:id/reopen
+
+ADVANCE:
+
+POST /api/payroll/advances
+
+GET /api/payroll/advances
+
+POST /api/payroll/advances/:id/recover
+
+DEDUCTIONS:
+
+POST /api/payroll/deductions
+
+GET /api/payroll/deductions
+
+POST /api/payroll/deductions/:id/approve
+
+PAYSLIPS:
+
+GET /api/payroll/payslips
+
+GET /api/payroll/payslips/:id/pdf
+
+PAYMENTS:
+
+POST /api/payroll/payments
+
+GET /api/payroll/payments
+
+POST /api/payroll/payments/:id/reconcile
+
+REPORTS:
+
+GET /api/payroll/reports/monthly
+
+GET /api/payroll/reports/site-wise
+
+GET /api/payroll/reports/employee-wise
+
+Every API must:
+
+- Verify Firebase Authentication.
+- Verify tenant membership.
+- Verify permissions.
+- Validate input.
+- Verify employee ownership.
+- Prevent duplicate financial transactions.
+- Use secure backend calculations.
+- Maintain audit logs.
+- Return consistent error responses.
+
+# 23. ROLE AND PERMISSION MANAGEMENT
+
+Integrate the existing Phase 3 Permission System.
+
+Suggested permissions:
+
+PAYROLL:
+
+- payroll.view
+- payroll.create
+- payroll.calculate
+- payroll.edit
+- payroll.approve
+- payroll.finalize
+- payroll.reopen
+- payroll.export
+
+SALARY:
+
+- salary.view
+- salary.view.own
+- salary.create
+- salary.edit
+- salary.revise
+
+ADVANCE:
+
+- advance.view
+- advance.create
+- advance.approve
+- advance.recover
+
+DEDUCTIONS:
+
+- deduction.view
+- deduction.create
+- deduction.approve
+
+PAYSLIP:
+
+- payslip.view
+- payslip.view.own
+- payslip.generate
+- payslip.download
+
+PAYMENT:
+
+- payment.view
+- payment.create
+- payment.reconcile
+- payment.export
+
+Suggested roles:
+
+Super Admin:
+Platform-level administration with controlled access.
+
+Company Admin:
+Manages tenant payroll according to assigned permissions.
+
+HR Manager:
+Manages employee salary and payroll processing.
+
+Accountant:
+Views financial information and manages authorized payment records.
+
+Payroll Manager:
+Calculates and prepares payroll.
+
+Supervisor:
+Views only permitted site-level employee payroll information.
+
+Employee:
+Views only personal salary slips and payroll information.
+
+Enforce all permissions on the backend.
+
+# 24. MULTI-TENANT SUBSCRIPTION INTEGRATION
+
+Happiiz HR is a multi-tenant SaaS platform.
+
+Every security company must have a separate payroll environment.
+
+Requirements:
+
+- Tenant-wise Salary Structures
+- Tenant-wise Payroll Runs
+- Tenant-wise Advances
+- Tenant-wise Deductions
+- Tenant-wise Salary Slips
+- Tenant-wise Reports
+- Tenant-wise Statutory Settings
+
+Subscription limits:
+
+- Employee-based subscription limits.
+- Check active employee subscription entitlement.
+- Prevent unauthorized payroll operations when subscription restrictions apply.
+- Do not delete historical payroll data when a subscription expires.
+- Allow authorized read-only access according to subscription policy.
+- Preserve tenant isolation.
+
+Super Admin must be able to manage subscription plans and tenant status without gaining unrestricted access to sensitive employee salary data.
+
+# 25. USER INTERFACE DESIGN
+
+Maintain the existing Happiiz HR design system.
+
+Create the following screens:
+
+1. Payroll Dashboard
+2. Salary Structure
+3. Salary Revision
+4. Monthly Payroll Processing
+5. Payroll Preview
+6. Earnings Management
+7. Deduction Management
+8. Advance Management
+9. Bonus & Incentives
+10. Statutory Configuration
+11. Overtime Payment
+12. Double Duty Payment
+13. Payroll Approval
+14. Payroll Finalization
+15. Employee Salary Slip
+16. Bulk Salary Slip Generation
+17. Bank Payment Management
+18. Payroll Reports
+19. Employee Payroll Portal
+20. Payroll History
+
+Design requirements:
+
+- Professional blue and white theme.
+- Modern SaaS dashboard.
+- Responsive layout.
+- Easy employee search.
+- Advanced filters.
+- Financial summary cards.
+- Clear earnings and deduction breakdown.
+- Professional PDF templates.
+- Confirmation dialogs.
+- Success and error messages.
+- Mobile-friendly interfaces.
+
+Every visible button must perform its actual action.
+
+# 26. SECURITY AND FINANCIAL INTEGRITY
+
+Implement:
+
+- Firebase Authentication
+- Tenant Isolation
+- Role-Based Permissions
+- Backend Financial Calculations
+- Secure Advance Ledger
+- Secure Deduction Ledger
+- Duplicate Transaction Prevention
+- Payroll Approval
+- Payroll Finalization
+- Historical Payroll Snapshots
+- Audit Logging
+- Restricted Salary Slip Access
+- Secure Employee Bank Information
+
+Never:
+
+- Trust salary calculations from the frontend.
+- Allow employees to modify their salary.
+- Allow unauthorized payroll approval.
+- Allow unauthorized deductions.
+- Overwrite finalized payroll.
+- Duplicate advance recovery.
+- Duplicate overtime payments.
+- Expose one tenant's salary information to another tenant.
+- Store bank credentials or OTPs.
+
+# 27. TESTING REQUIREMENTS
+
+Test all important workflows:
+
+1. Salary Structure Creation
+2. Salary Revision
+3. Monthly Salary Calculation
+4. Daily Wage Calculation
+5. Attendance-Based Salary
+6. Half-Day Calculation
+7. Approved Leave Calculation
+8. Overtime Calculation
+9. Double Duty Payment
+10. Holiday Duty Payment
+11. Advance Creation
+12. Advance Recovery
+13. Uniform Deduction
+14. Other Authorized Deduction
+15. Bonus and Incentives
+16. Statutory Calculations
+17. Gross Salary Calculation
+18. Net Salary Calculation
+19. Payroll Approval
+20. Payroll Finalization
+21. Payroll Lock
+22. Payroll Reopening
+23. Salary Slip PDF
+24. Bulk Salary Slip
+25. Bank Payment Export
+26. Payment Reconciliation
+27. Employee Self-Service Portal
+28. Payroll Reports
+29. Tenant Isolation
+30. Role Permissions
+31. Duplicate Payment Prevention
+32. Historical Payroll Integrity
+33. Mobile Responsive Testing
+
+Use at least two test tenants and multiple test employees.
+
+Test all calculations with known expected values.
+
+Do not mark tests passed without actually executing them.
+
+# 28. DEVELOPMENT RULES
+
+- Inspect the existing codebase first.
+- Preserve Phase 1–6.
+- Reuse existing Firebase.
+- Reuse existing employee records.
+- Reuse existing site records.
+- Reuse finalized attendance.
+- Reuse existing subscription architecture.
+- Reuse existing role permissions.
+- Do not create duplicate databases.
+- Do not hardcode salary rates.
+- Do not hardcode statutory rates.
+- Do not fabricate payroll data.
+- Use secure financial transactions.
+- Use audit trails.
+- Use proper PDF generation.
+- Implement real backend functionality.
+- Keep the software modular and scalable.
+
+# 29. PHASE 7 FINAL DELIVERABLES
+
+At completion, provide:
+
+1. Complete Payroll Dashboard.
+2. Employee Salary Structure Management.
+3. Salary Revision Management.
+4. Attendance-Based Automatic Salary.
+5. Monthly Payroll Processing.
+6. Daily Wage Calculation.
+7. Overtime Payment.
+8. Double Duty Payment.
+9. Holiday Duty Payment.
+10. Advance Management.
+11. Uniform and Other Deduction Management.
+12. Bonus and Incentives.
+13. Allowance Management.
+14. Statutory Payroll Configuration.
+15. Gross and Net Salary Calculation.
+16. Payroll Approval Workflow.
+17. Payroll Finalization and Lock.
+18. Salary Slip PDF.
+19. Bulk Salary Slip Generation.
+20. Employee Payroll Portal.
+21. Bank Payment Reports.
+22. Payroll Analytics.
+23. Firestore Database Integration.
+24. Backend API Integration.
+25. Security Rules.
+26. Role and Permission Integration.
+27. Multi-Tenant Payroll Integration.
+28. Testing Report.
+29. Deployment Instructions.
+
+# 30. FINAL EXECUTION INSTRUCTION
+
+First inspect the complete existing Happiiz HR project.
+
+Understand how Phase 1 through Phase 6 have been implemented.
+
+Identify the existing employee, site, attendance, subscription and permission data structures.
+
+Then develop Phase 7 without breaking existing modules.
+
+Implement the complete backend, database, frontend, calculations, approvals, reports and PDF generation.
+
+Do not stop after creating UI screens.
+
+Test the real payroll calculation workflow.
+
+If any required dependency is missing, clearly identify it rather than inventing data or silently replacing existing modules.
+
+At completion, provide:
+
+- Completed Features
+- Pending Features
+- Database Changes
+- Backend Changes
+- API Changes
+- Security Changes
+- Payroll Calculation Test Results
+- PDF Test Results
+- Known Issues
+- Deployment Instructions
+
+FINAL GOAL:
+
+Build a complete, professional, secure, accurate and scalable Payroll & Salary Management System for Happiiz HR, fully integrated with Phase 1–6 and ready for future Client Billing, Accounting and Financial Management modules.

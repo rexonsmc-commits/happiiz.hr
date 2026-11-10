@@ -94,9 +94,9 @@ export const AttendanceManagementModule: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Sub-Navigation Pill Header */}
-      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between overflow-x-auto gap-2">
-        <div className="flex items-center gap-1.5 min-w-max">
+      {/* Sub-Navigation Pill Header - Multi-Line Wrap */}
+      <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -104,13 +104,13 @@ export const AttendanceManagementModule: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as any)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/70 border border-slate-100'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0" />
                 <span>{item.label}</span>
               </button>
             );
@@ -119,9 +119,9 @@ export const AttendanceManagementModule: React.FC = () => {
 
         <button
           onClick={() => setIsCheckInModalOpen(true)}
-          className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm transition-all"
+          className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-xs transition-all cursor-pointer"
         >
-          <Smartphone className="w-4 h-4 text-sky-400" />
+          <Smartphone className="w-3.5 h-3.5 text-sky-400" />
           <span>Punch Portal (GPS/QR)</span>
         </button>
       </div>

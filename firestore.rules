@@ -372,6 +372,237 @@ service cloud.firestore {
         allow create, update: if isCompanyAdmin(companyId) && isValidId(summaryId);
         allow delete: if isCompanyAdmin(companyId);
       }
+
+      // Phase 7 Subcollection: Salary Structures
+      match /salaryStructures/{structureId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(structureId);
+      }
+
+      // Phase 7 Subcollection: Salary Revisions History
+      match /salaryRevisions/{revisionId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isCompanyAdmin(companyId) && isValidId(revisionId);
+        allow update, delete: if false; // Immutable audit trail
+      }
+
+      // Phase 7 Subcollection: Payroll Runs
+      match /payrollRuns/{runId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(runId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 7 Subcollection: Payroll Entries (Line items per employee)
+      match /payrollEntries/{entryId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(entryId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 7 Subcollection: Employee Advances & Recovery
+      match /employeeAdvances/{advanceId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(advanceId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 7 Subcollection: Advance Transactions Ledger
+      match /advanceTransactions/{txnId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isCompanyAdmin(companyId) && isValidId(txnId);
+        allow update, delete: if false; // Immutable ledger
+      }
+
+      // Phase 7 Subcollection: Payroll Deductions (Uniform, Equipment, Loans)
+      match /payrollDeductions/{deductionId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(deductionId);
+      }
+
+      // Phase 7 Subcollection: Statutory Configurations (PF, ESI, PT)
+      match /statutoryConfigurations/{configId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(configId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 7 Subcollection: Salary Slips
+      match /salarySlips/{slipId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(slipId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 7 Subcollection: Bank Payment Statements
+      match /bankStatements/{statementId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(statementId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Phase 8 Subcollection: Client Rate Cards
+      match /rateCards/{rateCardId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(rateCardId);
+      }
+
+      // Phase 8 Subcollection: Billing Policies
+      match /billingPolicies/{policyId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(policyId);
+      }
+
+      // Phase 8 Subcollection: Client GST Tax Invoices
+      match /clientInvoices/{invoiceId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(invoiceId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 8 Subcollection: Additional Services Catalog & Billables
+      match /additionalServices/{serviceId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(serviceId);
+      }
+
+      // Phase 8 Subcollection: Service Charge Configurations
+      match /serviceCharges/{chargeId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update, delete: if isCompanyAdmin(companyId) && isValidId(chargeId);
+      }
+
+      // Phase 8 Subcollection: Debit Notes
+      match /debitNotes/{debitNoteId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(debitNoteId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 8 Subcollection: Credit Notes
+      match /creditNotes/{creditNoteId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(creditNoteId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 8 Subcollection: Client Payments & Receipts
+      match /clientPayments/{paymentId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(paymentId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 8 Subcollection: Client Accounts Ledger
+      match /clientLedger/{ledgerId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isCompanyAdmin(companyId) && isValidId(ledgerId);
+        allow update, delete: if false; // Immutable financial ledger
+      }
+
+      // Phase 8 Subcollection: GST Tax Configurations
+      match /gstConfigurations/{configId} {
+        allow get, list: if isCompanyAdmin(companyId);
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(configId);
+        allow delete: if isSuperAdmin();
+      }
+
+      // Phase 9 Subcollections: Accounting & Financial Management
+      match /chartOfAccounts/{accountId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(accountId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /journalEntries/{journalId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(journalId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /cashTransactions/{transactionId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(transactionId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /bankAccounts/{bankAccountId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(bankAccountId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /bankTransactions/{transactionId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(transactionId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /bankReconciliations/{reconciliationId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(reconciliationId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /expenses/{expenseId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(expenseId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /incomeEntries/{incomeId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(incomeId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /vendors/{vendorId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(vendorId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /purchaseBills/{billId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(billId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /paymentVouchers/{voucherId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(voucherId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /receiptVouchers/{voucherId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(voucherId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /generalLedger/{ledgerEntryId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isCompanyAdmin(companyId) && isValidId(ledgerEntryId);
+        allow update, delete: if false; // Immutable general ledger audit trail
+      }
+
+      match /financialYears/{yearId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(yearId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /fixedAssets/{assetId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create, update: if isCompanyAdmin(companyId) && isValidId(assetId);
+        allow delete: if isSuperAdmin();
+      }
+
+      match /accountingAuditLogs/{logId} {
+        allow get, list: if isCompanyAdmin(companyId) || isSignedIn();
+        allow create: if isCompanyAdmin(companyId) && isValidId(logId);
+        allow update, delete: if false; // Immutable audit log
+      }
     }
 
     // Top-Level Tenant Mirror Path

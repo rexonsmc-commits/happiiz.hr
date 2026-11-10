@@ -95,10 +95,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // Phase 6: Advanced Attendance & Duty Rosters
     { id: 'ca_attendance', label: 'Attendance (GPS/QR)', icon: Clock, badge: 'Phase 6' },
     { id: 'ca_roster', label: 'Shifts & Roster', icon: CalendarDays, badge: 'Live' },
-    // Future HRMS roadmap modules
-    { id: 'ca_payroll', label: 'Payroll', icon: Banknote, pill: 'Roadmap', comingSoon: true },
-    { id: 'ca_invoices', label: 'Invoices', icon: Receipt, pill: 'Roadmap', comingSoon: true },
-    { id: 'ca_accounts', label: 'Accounts', icon: BarChart3, pill: 'Roadmap', comingSoon: true },
+    // Phase 7: Payroll & Wages Management
+    { id: 'ca_payroll', label: 'Payroll & Wages', icon: Banknote, badge: 'Phase 7' },
+    // Phase 8: Client Billing & GST Invoicing
+    { id: 'ca_invoices', label: 'Client Billing (GST)', icon: Receipt, badge: 'Phase 8' },
+    // Phase 9: Complete Accounting & Financial Management
+    { id: 'ca_accounts', label: 'Accounts & Finance', icon: BarChart3, badge: 'Phase 9' },
     { id: 'ca_documents', label: 'Documents', icon: FolderOpen, pill: 'Roadmap', comingSoon: true },
   ];
 
